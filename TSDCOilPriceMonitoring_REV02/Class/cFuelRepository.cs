@@ -1,31 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using TSDCOilPriceMonitoring_REV02.Models;
 
 namespace TSDCOilPriceMonitoring_REV02.Class
 {
     public class cFuelRepository
     {
-        public List<cmlDropdownItem> GetStations()
+        public List<cmlDropdownItem> C_PRCaoGetStations()
         {
             cDatabase oDB = new cDatabase();
             StringBuilder oSql = new StringBuilder();
             oSql.AppendLine("SELECT FNStationId AS nId, FTName AS tName");
             oSql.AppendLine($"FROM {cCS.tTbl_Stations} ORDER BY FTName");
-            return oDB.C_GETaQuerytoListObj<cmlDropdownItem>(oSql.ToString());
+            return oDB.C_PRCaQuerytoListObj<cmlDropdownItem>(oSql.ToString());
         }
 
-        public List<cmlDropdownItem> GetFuelTypes()
+        public List<cmlDropdownItem> C_PRCaoGetFuelTypes()
         {
             cDatabase oDB = new cDatabase();
             StringBuilder oSql = new StringBuilder();
             oSql.AppendLine("SELECT FNFuelTypeId AS nId, FTName AS tName");
             oSql.AppendLine($"FROM {cCS.tTbl_FuelTypes} ORDER BY FTName");
-            return oDB.C_GETaQuerytoListObj<cmlDropdownItem>(oSql.ToString());
+            return oDB.C_PRCaQuerytoListObj<cmlDropdownItem>(oSql.ToString());
         }
 
-        public List<cmlFuelSummary> GetFuelSummary(DateTime pdStart, DateTime pdEnd, int pnStationId, int pnFuelId)
+        public List<cmlFuelSummary> C_PRCaoGetFuelSummary(DateTime pdStart, DateTime pdEnd, int pnStationId, int pnFuelId)
         {
             cDatabase oDB = new cDatabase();
             StringBuilder oSql = new StringBuilder();
@@ -41,10 +39,10 @@ namespace TSDCOilPriceMonitoring_REV02.Class
             oSql.AppendLine("GROUP BY S.FTName, F.FTName");
 
             var oParams = new { Start = pdStart, End = pdEnd, StationId = pnStationId, FuelId = pnFuelId };
-            return oDB.C_GETaQuerytoListObj<cmlFuelSummary>(oSql.ToString(), oParams);
+            return oDB.C_PRCaQuerytoListObj<cmlFuelSummary>(oSql.ToString(), oParams);
         }
 
-        public List<cmlFuelPriceDetail> GetFuelPriceDetails(DateTime pdStart, DateTime pdEnd, int pnStationId, int pnFuelId)
+        public List<cmlFuelPriceDetail> C_PRCaoGetFuelPriceDetails(DateTime pdStart, DateTime pdEnd, int pnStationId, int pnFuelId)
         {
             cDatabase oDB = new cDatabase();
             StringBuilder oSql = new StringBuilder();
@@ -59,7 +57,7 @@ namespace TSDCOilPriceMonitoring_REV02.Class
             oSql.AppendLine("ORDER BY P.FDEffectiveDate DESC");
 
             var oParams = new { Start = pdStart, End = pdEnd, StationId = pnStationId, FuelId = pnFuelId };
-            return oDB.C_GETaQuerytoListObj<cmlFuelPriceDetail>(oSql.ToString(), oParams);
+            return oDB.C_PRCaQuerytoListObj<cmlFuelPriceDetail>(oSql.ToString(), oParams);
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using TSDCOilPriceMonitoring_REV02.Models;
 
 namespace TSDCOilPriceMonitoring_REV02.Class

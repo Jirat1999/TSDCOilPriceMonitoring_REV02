@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TSDCOilPriceMonitoring_REV02.Class
+﻿namespace TSDCOilPriceMonitoring_REV02.Class
 {
     public class cCS
     {

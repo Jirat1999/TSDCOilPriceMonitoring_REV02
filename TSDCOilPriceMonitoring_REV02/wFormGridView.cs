@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Text;
 using TSDCOilPriceMonitoring_REV02.Class;
 using TSDCOilPriceMonitoring_REV02.Models;
 
@@ -18,6 +12,9 @@ namespace TSDCOilPriceMonitoring_REV02
         private Panel opnContent;
         private DataGridView ogdData;
 
+        // 🌟 เพิ่มตัวแปรสำหรับตัวเลือกจำนวนข้อมูล
+        private ComboBox ocbLimit;
+
         public wFormGridView()
         {
             try
@@ -29,7 +26,12 @@ namespace TSDCOilPriceMonitoring_REV02
             }
             catch (Exception ex)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormGridView.Constructor", tFTErrorMessage = ex.Message, tFTStackTrace = ex.StackTrace });
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog
+                {
+                    tFTProcessName = "wFormGridView.Constructor",
+                    tFTErrorMessage = ex.Message,
+                    tFTStackTrace = ex.StackTrace
+                });
             }
         }
 
@@ -37,14 +39,27 @@ namespace TSDCOilPriceMonitoring_REV02
         {
             try
             {
-                List<cmlFuelPriceDetail> oDetails = oRepo.GetFuelPriceDetails(oFilterPanel.dStartDate, oFilterPanel.dEndDate.AddDays(1).AddTicks(-1), oFilterPanel.nStationId, oFilterPanel.nFuelId);
-                ogdData.DataSource = oDetails.Count > 0 ? oDetails : null;
-                if (oDetails.Count > 0) ogdData.ClearSelection();
+                List<cmlFuelPriceDetail> oDetails = oRepo.C_PRCaoGetFuelPriceDetails(oFilterPanel.dStartDate, oFilterPanel.dEndDate.AddDays(1).AddTicks(-1), oFilterPanel.nStationId, oFilterPanel.nFuelId);
+
+                int nLimit = 0;
+                if (ocbLimit.SelectedItem != null && ocbLimit.SelectedItem.ToString() != "All")
+                {
+                    int.TryParse(ocbLimit.SelectedItem.ToString(), out nLimit);
+                }
+
+                var oDisplayData = nLimit > 0 ? oDetails.Take(nLimit).ToList() : oDetails;
+
+                ogdData.DataSource = oDisplayData.Count > 0 ? oDisplayData : null;
+                if (oDisplayData.Count > 0) ogdData.ClearSelection();
             }
             catch (Exception ex)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormGridView.W_PRCxLoadGridData", tFTErrorMessage = ex.Message, tFTStackTrace = ex.StackTrace });
-                MessageBox.Show("เกิดข้อผิดพลาดในการดึงข้อมูล", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog
+                {
+                    tFTProcessName = "wFormGridView.W_PRCxLoadGridData",
+                    tFTErrorMessage = ex.Message,
+                    tFTStackTrace = ex.StackTrace
+                });
             }
         }
 
@@ -77,8 +92,12 @@ namespace TSDCOilPriceMonitoring_REV02
             }
             catch (Exception ex)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormGridView.W_PRCxBtnExport_Click", tFTErrorMessage = ex.Message, tFTStackTrace = ex.StackTrace });
-                MessageBox.Show("เกิดข้อผิดพลาดในการส่งออกไฟล์", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog
+                {
+                    tFTProcessName = "wFormGridView.W_PRCxBtnExport_Click",
+                    tFTErrorMessage = ex.Message,
+                    tFTStackTrace = ex.StackTrace
+                });
             }
         }
 
@@ -86,7 +105,8 @@ namespace TSDCOilPriceMonitoring_REV02
         {
             try
             {
-                this.BackColor = Color.FromArgb(240, 242, 255); this.Size = new Size(1000, 600);
+                this.BackColor = Color.FromArgb(244, 247, 252);
+                this.Size = new Size(1000, 600);
 
                 oFilterPanel = new wFilterPanel();
                 oFilterPanel.W_PRCxInitialize(true);
@@ -96,52 +116,121 @@ namespace TSDCOilPriceMonitoring_REV02
                 opnContent = new Panel 
                 { 
                     Dock = DockStyle.Fill, 
-                    Padding = new Padding(20) 
+                    Padding = new Padding(25) 
                 };
+
+                Panel opnTopHeader = new Panel 
+                { 
+                    Dock = DockStyle.Top, 
+                    Height = 45, 
+                    Padding = new Padding(0, 0, 0, 10) 
+                };
+
                 Label olaTitle = new Label 
                 { 
                     Text = "Fuel Price Details List", 
-                    Font = new Font("Segoe UI", 16, FontStyle.Bold), 
+                    Font = new Font("Segoe UI", 18, FontStyle.Bold), 
+                    ForeColor = Color.FromArgb(15, 32, 67), 
                     AutoSize = true, 
-                    Dock = DockStyle.Top, 
-                    Padding = new Padding(0, 0, 0, 15) 
+                    Dock = DockStyle.Left 
                 };
 
-                ogdData = new DataGridView 
+                Panel opnLimitControls = new Panel 
+                { 
+                    Dock = DockStyle.Right, 
+                    Width = 260 
+                };
+                Label olaLimit = new Label 
+                { 
+                    Text = "Show records:", 
+                    AutoSize = true, 
+                    Location = new Point(40, 5), 
+                    Font = new Font("Segoe UI", 10.5f), 
+                    ForeColor = Color.FromArgb(64, 64, 64) 
+                };
+
+                ocbLimit = new ComboBox 
+                { 
+                    DropDownStyle = ComboBoxStyle.DropDownList, 
+                    Width = 100, 
+                    Location = new Point(150, 2), 
+                    Font = new Font("Segoe UI", 10.5f) 
+                };
+                ocbLimit.Items.AddRange(new string[] { "50", "100", "500", "All" });
+                ocbLimit.SelectedIndex = 1; 
+
+                ocbLimit.SelectedIndexChanged += (s, e) => W_PRCxLoadGridData();
+
+                opnLimitControls.Controls.Add(olaLimit);
+                opnLimitControls.Controls.Add(ocbLimit);
+
+                opnTopHeader.Controls.Add(olaTitle);
+                opnTopHeader.Controls.Add(opnLimitControls);
+
+                Panel opnGridContainer = new Panel 
                 { 
                     Dock = DockStyle.Fill, 
-                    AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill, 
-                    BackgroundColor = Color.White, 
-                    ReadOnly = true, 
-                    RowHeadersVisible = false, 
-                    SelectionMode = DataGridViewSelectionMode.FullRowSelect, 
-                    AutoGenerateColumns = false 
+                    BackColor = Color.White, 
+                    Padding = new Padding(2) 
                 };
+
+                ogdData = new DataGridView
+                {
+                    Dock = DockStyle.Fill,
+                    AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+                    BackgroundColor = Color.White,
+                    ReadOnly = true,
+                    RowHeadersVisible = false,
+                    SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                    AutoGenerateColumns = false,
+                    BorderStyle = BorderStyle.None,
+                    CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
+                    EnableHeadersVisualStyles = false,
+                    GridColor = Color.FromArgb(235, 235, 235)
+                };
+
+                ogdData.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(15, 32, 67);
+                ogdData.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+                ogdData.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+                ogdData.ColumnHeadersHeight = 45;
+                ogdData.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+
+                ogdData.DefaultCellStyle.Font = new Font("Segoe UI", 10.5f);
+                ogdData.DefaultCellStyle.Padding = new Padding(5, 0, 5, 0);
+                ogdData.DefaultCellStyle.SelectionBackColor = Color.FromArgb(215, 235, 250);
+                ogdData.DefaultCellStyle.SelectionForeColor = Color.FromArgb(15, 32, 67);
+                ogdData.RowTemplate.Height = 40;
+
+                ogdData.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(249, 250, 252);
+
                 ogdData.Columns.Add(new DataGridViewTextBoxColumn 
-                { 
+                {
                     HeaderText = "Effective Date", 
-                    DataPropertyName = "dEffectiveDate", 
-                    DefaultCellStyle = { Format = "dd/MM/yyyy" } 
+                    DataPropertyName = "dEffectiveDate",
+                    DefaultCellStyle = { Format = "dd MMM yyyy" } 
                 });
                 ogdData.Columns.Add(new DataGridViewTextBoxColumn 
                 { 
-                    HeaderText = "Station Name", 
+                    HeaderText = "Station Name",
                     DataPropertyName = "tStationName" 
                 });
                 ogdData.Columns.Add(new DataGridViewTextBoxColumn 
                 { 
-                    HeaderText = "Fuel Type", 
+                    HeaderText = "Fuel Type",
                     DataPropertyName = "tFuelName" 
                 });
                 ogdData.Columns.Add(new DataGridViewTextBoxColumn 
                 { 
-                    HeaderText = "Price", 
+                    HeaderText = "Price (THB)", 
                     DataPropertyName = "cPricedPrice", 
-                    DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleRight, 
-                    Format = "N2" } 
-                });
+                    DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleRight, Format = "N2" } });
 
-                opnContent.Controls.Add(ogdData); opnContent.Controls.Add(olaTitle);
+                opnGridContainer.Controls.Add(ogdData);
+
+                // 🌟 ใส่ Grid เข้าไปก่อน แล้วเอา Header วางด้านบนสุด
+                opnContent.Controls.Add(opnGridContainer);
+                opnContent.Controls.Add(opnTopHeader);
+
                 this.Controls.Add(opnContent); this.Controls.Add(oFilterPanel);
                 oFilterPanel.SendToBack();
             }

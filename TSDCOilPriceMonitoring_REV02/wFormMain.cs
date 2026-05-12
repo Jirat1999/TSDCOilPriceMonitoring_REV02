@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
-using TSDCOilPriceMonitoring_REV02.Class;
+﻿using TSDCOilPriceMonitoring_REV02.Class;
 using TSDCOilPriceMonitoring_REV02.Models;
 
 namespace TSDCOilPriceMonitoring_REV02
@@ -14,16 +7,35 @@ namespace TSDCOilPriceMonitoring_REV02
     {
         private Panel opnSidebar, opnContent;
         private Button ocnDashBoard, ocnGridView;
+        private Panel opnActiveIndicator; // แถบสีฟ้าที่จะเลื่อนตามปุ่ม
         private Form oActiveForm = null;
         private cLogService oLog = new cLogService();
+        private System.Windows.Forms.Timer oFadeTimer;
+
+        private Color oSidebarBg = Color.FromArgb(15, 32, 67);
+        private Color oActiveBtn = Color.FromArgb(0, 120, 212);
+        private Color oHoverBtn = Color.FromArgb(25, 50, 100);
+        private Color oContentBg = Color.FromArgb(244, 247, 252);
 
         public wFormMain()
         {
             try
             {
+                // 🌟 ตั้งค่าให้ Form โปร่งใสก่อนเพื่อทำ Fade-in
+                this.Opacity = 0;
+
                 W_PRCxSetupUI();
                 W_PRCxHighlightButton(ocnDashBoard);
                 W_PRCxOpenChildForm(new wFormDashBoard());
+
+                // 🌟 เริ่ม Animation Fade-in
+                oFadeTimer = new System.Windows.Forms.Timer { Interval = 15 };
+                oFadeTimer.Tick += (s, e) =>
+                {
+                    if (this.Opacity < 1) this.Opacity += 0.05;
+                    else oFadeTimer.Stop();
+                };
+                oFadeTimer.Start();
             }
             catch (Exception ex)
             {
@@ -50,8 +62,17 @@ namespace TSDCOilPriceMonitoring_REV02
         {
             try
             {
-                ocnDashBoard.BackColor = Color.FromArgb(52, 73, 94); ocnGridView.BackColor = Color.FromArgb(52, 73, 94);
-                if (poActiveBtn != null) poActiveBtn.BackColor = Color.FromArgb(41, 128, 185);
+                ocnDashBoard.BackColor = oSidebarBg;
+                ocnGridView.BackColor = oSidebarBg;
+
+                if (poActiveBtn != null)
+                {
+                    poActiveBtn.BackColor = oHoverBtn; // สีพื้นหลังปุ่มที่ถูกเลือก
+                    // 🌟 Animation แถบเลื่อน (ย้ายตำแหน่งแถบสีฟ้ามาที่ปุ่มที่คลิก)
+                    opnActiveIndicator.Height = poActiveBtn.Height;
+                    opnActiveIndicator.Top = poActiveBtn.Top;
+                    opnActiveIndicator.BringToFront();
+                }
             }
             catch (Exception ex)
             {
@@ -63,34 +84,31 @@ namespace TSDCOilPriceMonitoring_REV02
         {
             try
             {
-                this.Text = "TSDC Oil Price Monitoring - Main System"; this.Size = new Size(1200, 700); this.StartPosition = FormStartPosition.CenterScreen;
+                this.Text = "TSDC Oil Price Monitoring";
+                this.Size = new Size(1200, 750);
+                this.StartPosition = FormStartPosition.CenterScreen;
 
-                opnSidebar = new Panel 
-                { 
-                    Dock = DockStyle.Left, 
-                    Width = 220, 
-                    BackColor = Color.FromArgb(44, 62, 80) 
-                };
-                Label olaAppTitle = new Label 
-                { 
-                    Text = "TSDC System", 
-                    Font = new Font("Segoe UI", 16, FontStyle.Bold), 
-                    ForeColor = Color.White, 
-                    TextAlign = ContentAlignment.MiddleCenter, 
-                    Dock = DockStyle.Top, 
-                    Height = 80 
-                };
+                opnSidebar = new Panel { Dock = DockStyle.Left, Width = 230, BackColor = oSidebarBg };
+                Label olaAppTitle = new Label { Text = "TSDC System", Font = new Font("Segoe UI", 18, FontStyle.Bold), ForeColor = Color.FromArgb(144, 202, 249), TextAlign = ContentAlignment.MiddleCenter, Dock = DockStyle.Top, Height = 100 };
 
-                ocnDashBoard = W_PRCopnCreateMenuButton("🏠 Dashboard", 80);
+                // 🌟 สร้างแถบ Active Indicator สีฟ้า
+                opnActiveIndicator = new Panel { Width = 5, BackColor = oActiveBtn, Left = 0 };
+                opnSidebar.Controls.Add(opnActiveIndicator);
+
+                ocnDashBoard = W_PRCopnCreateMenuButton("🏠  Dashboard", 100);
                 ocnDashBoard.Click += (s, e) => { W_PRCxHighlightButton((Button)s); W_PRCxOpenChildForm(new wFormDashBoard()); };
 
-                ocnGridView = W_PRCopnCreateMenuButton("📊 Grid View", 130);
+                ocnGridView = W_PRCopnCreateMenuButton("📊  Grid View", 160);
                 ocnGridView.Click += (s, e) => { W_PRCxHighlightButton((Button)s); W_PRCxOpenChildForm(new wFormGridView()); };
 
                 opnSidebar.Controls.Add(ocnGridView); opnSidebar.Controls.Add(ocnDashBoard); opnSidebar.Controls.Add(olaAppTitle);
-                opnContent = new Panel { Dock = DockStyle.Fill, BackColor = Color.FromArgb(240, 242, 245) };
 
-                this.Controls.Add(opnContent); this.Controls.Add(opnSidebar);
+                // เพิ่มเงาให้ Sidebar เล็กน้อยโดยใช้ขอบสีเข้ม
+                Panel opnShadow = new Panel { Dock = DockStyle.Left, Width = 1, BackColor = Color.FromArgb(10, 20, 40) };
+
+                opnContent = new Panel { Dock = DockStyle.Fill, BackColor = oContentBg };
+
+                this.Controls.Add(opnContent); this.Controls.Add(opnShadow); this.Controls.Add(opnSidebar);
             }
             catch (Exception ex)
             {
@@ -100,15 +118,18 @@ namespace TSDCOilPriceMonitoring_REV02
 
         private Button W_PRCopnCreateMenuButton(string ptText, int pnPositionY)
         {
+            Button oBtn = new Button();
             try
             {
-                return new Button { Text = ptText, Font = new Font("Segoe UI", 11), ForeColor = Color.White, BackColor = Color.FromArgb(52, 73, 94), FlatStyle = FlatStyle.Flat, FlatAppearance = { BorderSize = 0 }, TextAlign = ContentAlignment.MiddleLeft, Padding = new Padding(20, 0, 0, 0), Location = new Point(0, pnPositionY), Size = new Size(220, 50), Cursor = Cursors.Hand };
+                oBtn = new Button { Text = ptText, Font = new Font("Segoe UI", 11, FontStyle.Regular), ForeColor = Color.White, BackColor = oSidebarBg, FlatStyle = FlatStyle.Flat, TextAlign = ContentAlignment.MiddleLeft, Padding = new Padding(25, 0, 0, 0), Location = new Point(0, pnPositionY), Size = new Size(230, 60), Cursor = Cursors.Hand };
+                oBtn.FlatAppearance.BorderSize = 0;
+                oBtn.FlatAppearance.MouseOverBackColor = oHoverBtn;
             }
             catch (Exception ex)
             {
                 oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormMain.W_PRCopnCreateMenuButton", tFTErrorMessage = ex.Message, tFTStackTrace = ex.StackTrace });
-                return new Button();
             }
+            return oBtn;
         }
     }
 }

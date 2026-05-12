@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 using TSDCOilPriceMonitoring_REV02.Models;
 
 namespace TSDCOilPriceMonitoring_REV02.Class
@@ -19,7 +16,7 @@ namespace TSDCOilPriceMonitoring_REV02.Class
             }
             catch (Exception)
             {
-                
+
             }
         }
 
@@ -33,7 +30,7 @@ namespace TSDCOilPriceMonitoring_REV02.Class
             catch (Exception) { }
         }
 
-    
+
         private void C_PRCxWriteErrorToJsonFile(cmlErrorLog poErrorLog)
         {
             try
@@ -60,7 +57,7 @@ namespace TSDCOilPriceMonitoring_REV02.Class
             }
             catch (Exception)
             {
-               
+
             }
         }
     }

@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Dapper;
 using System.Data.SqlClient;
-using System.Text;
 using TSDCOilPriceMonitoring_REV02.Models;
-using Dapper;
 
 namespace TSDCOilPriceMonitoring_REV02.Class
 {
     public class cDatabase
     {
-        public string C_CONtDatabase(cmlConnectionConfig poConfig)
+        public string C_PRCxDatabase(cmlConnectionConfig poConfig)
         {
             try
             {
@@ -39,7 +36,7 @@ namespace TSDCOilPriceMonitoring_REV02.Class
             }
         }
 
-        public List<T> C_GETaQuerytoListObj<T>(string ptSqlCmd, object poParam = null)
+        public List<T> C_PRCaQuerytoListObj<T>(string ptSqlCmd, object poParam = null)
         {
             try
             {

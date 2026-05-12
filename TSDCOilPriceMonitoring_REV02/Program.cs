@@ -1,7 +1,4 @@
 using Microsoft.Extensions.Configuration;
-using System;
-using System.IO;
-using System.Windows.Forms;
 using TSDCOilPriceMonitoring_REV02.Class;
 using TSDCOilPriceMonitoring_REV02.Models;
 
@@ -37,7 +34,7 @@ namespace TSDCOilPriceMonitoring_REV02
                 oConfig.GetSection("ConnectionConfig").Bind(oConnConfig);
 
                 cDatabase oDB = new cDatabase();
-                cCS.tCS_ConStr = oDB.C_CONtDatabase(oConnConfig);
+                cCS.tCS_ConStr = oDB.C_PRCxDatabase(oConnConfig);
 
                 Application.Run(new wFormMain());
             }
@@ -50,7 +47,7 @@ namespace TSDCOilPriceMonitoring_REV02
                     tFTStackTrace = ex.StackTrace
                 });
 
-                MessageBox.Show($"พบข้อผิดพลาดระดับร้ายแรงขณะเริ่มโปรแกรม:\n{ex.Message}", "Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"A critical error occurred while starting the application.:\n{ex.Message}", "Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -63,7 +60,7 @@ namespace TSDCOilPriceMonitoring_REV02
                 tFTStackTrace = e.Exception.StackTrace
             });
 
-            MessageBox.Show($"พบข้อผิดพลาดของระบบ:\n{e.Exception.Message}\n\n(รายละเอียดถูกบันทึกไว้ในโฟลเดอร์ Logs แล้ว)", "System Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show($"A system error has occurred.:\n{e.Exception.Message}\n\n(Details have been saved to the Logs folder.)", "System Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private static void W_PRCxGlobalUnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e)
@@ -76,8 +73,8 @@ namespace TSDCOilPriceMonitoring_REV02
                 tFTStackTrace = ex.StackTrace
             });
 
-            MessageBox.Show($"พบข้อผิดพลาดร้ายแรงของระบบ โปรแกรมจำเป็นต้องปิดตัวลง:\n{ex.Message}\n\n(รายละเอียดถูกบันทึกไว้ในโฟลเดอร์ Logs แล้ว)", "Fatal System Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            MessageBox.Show($"A critical system error has occurred. The application must close.:\n{ex.Message}\n\n(Details have been saved to the Logs folder.)", "Fatal System Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
         }
     }
-    
+
 }
