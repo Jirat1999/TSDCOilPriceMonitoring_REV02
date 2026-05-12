@@ -23,13 +23,13 @@ namespace TSDCOilPriceMonitoring_REV02.Class
 
                 return oSql.ToString();
             }
-            catch (Exception ex)
+            catch (Exception oEx)
             {
                 new cLogService().C_PRCxWriteErrorLog(new cmlErrorLog
                 {
                     tFTProcessName = "cLogQuery.C_PRCtGetInsertErrorLog",
-                    tFTErrorMessage = ex.Message,
-                    tFTStackTrace = ex.StackTrace
+                    tFTErrorMessage = oEx.Message,
+                    tFTStackTrace = oEx.StackTrace
                 });
                 return string.Empty;
             }
@@ -51,13 +51,13 @@ namespace TSDCOilPriceMonitoring_REV02.Class
 
                 return oSql.ToString();
             }
-            catch (Exception ex)
+            catch (Exception oEx)
             {
                 new cLogService().C_PRCxWriteErrorLog(new cmlErrorLog
                 {
                     tFTProcessName = "cLogQuery.C_PRCtGetInsertEventLog",
-                    tFTErrorMessage = ex.Message,
-                    tFTStackTrace = ex.StackTrace
+                    tFTErrorMessage = oEx.Message,
+                    tFTStackTrace = oEx.StackTrace
                 });
                 return string.Empty;
             }

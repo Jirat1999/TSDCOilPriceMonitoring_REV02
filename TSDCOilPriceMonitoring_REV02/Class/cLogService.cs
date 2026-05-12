@@ -14,9 +14,14 @@ namespace TSDCOilPriceMonitoring_REV02.Class
                 cDatabase oDB = new cDatabase();
                 oDB.C_PRCbExecuteNoQuery(cLogQuery.C_PRCtGetInsertErrorLog(), poErrorLog);
             }
-            catch (Exception)
+            catch (Exception oEx)
             {
-
+                C_PRCxWriteErrorToJsonFile(new cmlErrorLog
+                {
+                    tFTProcessName = "cLogService.C_PRCxWriteErrorLog (DB Failed)",
+                    tFTErrorMessage = oEx.Message,
+                    tFTStackTrace = oEx.StackTrace
+                });
             }
         }
 
@@ -27,9 +32,16 @@ namespace TSDCOilPriceMonitoring_REV02.Class
                 cDatabase oDB = new cDatabase();
                 oDB.C_PRCbExecuteNoQuery(cLogQuery.C_PRCtGetInsertEventLog(), poEventLog);
             }
-            catch (Exception) { }
+            catch (Exception oEx)
+            {
+                C_PRCxWriteErrorToJsonFile(new cmlErrorLog
+                {
+                    tFTProcessName = "cLogService.C_PRCxWriteEventLog (DB Failed)",
+                    tFTErrorMessage = oEx.Message,
+                    tFTStackTrace = oEx.StackTrace
+                });
+            }
         }
-
 
         private void C_PRCxWriteErrorToJsonFile(cmlErrorLog poErrorLog)
         {
@@ -55,9 +67,9 @@ namespace TSDCOilPriceMonitoring_REV02.Class
                 string tJsonData = JsonSerializer.Serialize(oLogData) + Environment.NewLine;
                 File.AppendAllText(tFilePath, tJsonData);
             }
-            catch (Exception)
+            catch (Exception oEx)
             {
-
+                try { File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Emergency_Log.txt"), $"[{DateTime.Now}] JSON Error: {oEx.Message} | Process: {poErrorLog.tFTProcessName}\n"); } catch { }
             }
         }
     }

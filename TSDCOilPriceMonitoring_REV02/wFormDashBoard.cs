@@ -24,12 +24,12 @@ namespace TSDCOilPriceMonitoring_REV02
                 W_PRCxSetupUI(); 
                 this.Load += (s, e) => W_PRCxLoadDashboardCard();
             }
-            catch (Exception ex) 
+            catch (Exception oEx) 
             { 
                 oLog?.C_PRCxWriteErrorLog(new cmlErrorLog 
                 { 
                     tFTProcessName = "wFormDashBoard.Constructor", 
-                    tFTErrorMessage = ex.Message 
+                    tFTErrorMessage = oEx.Message 
                 }); 
             }
         }
@@ -98,12 +98,12 @@ namespace TSDCOilPriceMonitoring_REV02
                     });
                 }
             }
-            catch (Exception ex) 
+            catch (Exception oEx) 
             { 
                 oLog?.C_PRCxWriteErrorLog(new cmlErrorLog 
                 { 
                     tFTProcessName = "wFormDashBoard.Load", 
-                    tFTErrorMessage = ex.Message 
+                    tFTErrorMessage = oEx.Message 
                 }); 
             }
         }

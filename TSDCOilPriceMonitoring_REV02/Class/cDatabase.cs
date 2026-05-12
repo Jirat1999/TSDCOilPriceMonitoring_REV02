@@ -24,13 +24,13 @@ namespace TSDCOilPriceMonitoring_REV02.Class
                 }
                 return oBuilder.ConnectionString;
             }
-            catch (Exception ex)
+            catch (Exception oEx)
             {
                 new cLogService().C_PRCxWriteErrorLog(new cmlErrorLog
                 {
                     tFTProcessName = "cDatabase.C_CONtDatabase",
-                    tFTErrorMessage = ex.Message,
-                    tFTStackTrace = ex.StackTrace
+                    tFTErrorMessage = oEx.Message,
+                    tFTStackTrace = oEx.StackTrace
                 });
                 return string.Empty;
             }
@@ -45,16 +45,16 @@ namespace TSDCOilPriceMonitoring_REV02.Class
                     return oConn.Query<T>(ptSqlCmd, poParam).ToList();
                 }
             }
-            catch (Exception ex)
+            catch (Exception oEx)
             {
                 new cLogService().C_PRCxWriteErrorLog(new cmlErrorLog
                 {
                     tFTProcessName = "cDatabase.C_GETaQuerytoListObj",
-                    tFTErrorMessage = ex.Message,
-                    tFTStackTrace = ex.StackTrace
+                    tFTErrorMessage = oEx.Message,
+                    tFTStackTrace = oEx.StackTrace
                 });
 
-                if (cCS.tMode == "DEV") throw ex;
+                if (cCS.tMode == "DEV") throw oEx;
                 return new List<T>();
             }
         }
@@ -69,16 +69,16 @@ namespace TSDCOilPriceMonitoring_REV02.Class
                     return nRowEffect > 0;
                 }
             }
-            catch (Exception ex)
+            catch (Exception oEx)
             {
                 new cLogService().C_PRCxWriteErrorLog(new cmlErrorLog
                 {
                     tFTProcessName = "cDatabase.C_PRCbExecuteNoQuery",
-                    tFTErrorMessage = ex.Message,
-                    tFTStackTrace = ex.StackTrace
+                    tFTErrorMessage = oEx.Message,
+                    tFTStackTrace = oEx.StackTrace
                 });
 
-                if (cCS.tMode == "DEV") throw ex;
+                if (cCS.tMode == "DEV") throw oEx;
                 return false;
             }
         }

@@ -52,18 +52,18 @@ namespace TSDCOilPriceMonitoring_REV02
                 ogdData.DataSource = oDisplayData.Count > 0 ? oDisplayData : null;
                 if (oDisplayData.Count > 0) ogdData.ClearSelection();
             }
-            catch (Exception ex)
+            catch (Exception oEx)
             {
                 oLog?.C_PRCxWriteErrorLog(new cmlErrorLog
                 {
                     tFTProcessName = "wFormGridView.W_PRCxLoadGridData",
-                    tFTErrorMessage = ex.Message,
-                    tFTStackTrace = ex.StackTrace
+                    tFTErrorMessage = oEx.Message,
+                    tFTStackTrace = oEx.StackTrace
                 });
             }
         }
 
-        private void W_PRCxBtnExport_Click(object sender, EventArgs e)
+        private void W_PRCxBtnExport_Click(object oSender, EventArgs oE)
         {
             try
             {
@@ -90,13 +90,13 @@ namespace TSDCOilPriceMonitoring_REV02
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception oEx)
             {
                 oLog?.C_PRCxWriteErrorLog(new cmlErrorLog
                 {
                     tFTProcessName = "wFormGridView.W_PRCxBtnExport_Click",
-                    tFTErrorMessage = ex.Message,
-                    tFTStackTrace = ex.StackTrace
+                    tFTErrorMessage = oEx.Message,
+                    tFTStackTrace = oEx.StackTrace
                 });
             }
         }
@@ -234,9 +234,9 @@ namespace TSDCOilPriceMonitoring_REV02
                 this.Controls.Add(opnContent); this.Controls.Add(oFilterPanel);
                 oFilterPanel.SendToBack();
             }
-            catch (Exception ex)
+            catch (Exception oEx)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormGridView.W_PRCxSetupUI", tFTErrorMessage = ex.Message, tFTStackTrace = ex.StackTrace });
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormGridView.W_PRCxSetupUI", tFTErrorMessage = oEx.Message, tFTStackTrace = oEx.StackTrace });
             }
         }
     }

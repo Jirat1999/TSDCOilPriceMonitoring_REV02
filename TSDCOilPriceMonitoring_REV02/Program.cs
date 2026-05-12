@@ -38,42 +38,42 @@ namespace TSDCOilPriceMonitoring_REV02
 
                 Application.Run(new wFormMain());
             }
-            catch (Exception ex)
+            catch (Exception oEx)
             {
                 new cLogService().C_PRCxWriteErrorLog(new cmlErrorLog
                 {
                     tFTProcessName = "Program.Main (Startup Error)",
-                    tFTErrorMessage = ex.Message,
-                    tFTStackTrace = ex.StackTrace
+                    tFTErrorMessage = oEx.Message,
+                    tFTStackTrace = oEx.StackTrace
                 });
 
-                MessageBox.Show($"A critical error occurred while starting the application.:\n{ex.Message}", "Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"A critical error occurred while starting the application.:\n{oEx.Message}", "Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private static void W_PRCxGlobalThreadExceptionHandler(object sender, ThreadExceptionEventArgs e)
+        private static void W_PRCxGlobalThreadExceptionHandler(object oSender, ThreadExceptionEventArgs oE)
         {
             new cLogService().C_PRCxWriteErrorLog(new cmlErrorLog
             {
                 tFTProcessName = "Global System Error (UI Thread)",
-                tFTErrorMessage = e.Exception.Message,
-                tFTStackTrace = e.Exception.StackTrace
+                tFTErrorMessage = oE.Exception.Message,
+                tFTStackTrace = oE.Exception.StackTrace
             });
 
-            MessageBox.Show($"A system error has occurred.:\n{e.Exception.Message}\n\n(Details have been saved to the Logs folder.)", "System Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show($"A system error has occurred.:\n{oE.Exception.Message}\n\n(Details have been saved to the Logs folder.)", "System Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-        private static void W_PRCxGlobalUnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e)
+        private static void W_PRCxGlobalUnhandledExceptionHandler(object oSender, UnhandledExceptionEventArgs oE)
         {
-            Exception ex = (Exception)e.ExceptionObject;
+            Exception oEx = (Exception)oE.ExceptionObject;
             new cLogService().C_PRCxWriteErrorLog(new cmlErrorLog
             {
                 tFTProcessName = "Global System Error (Background Thread)",
-                tFTErrorMessage = ex.Message,
-                tFTStackTrace = ex.StackTrace
+                tFTErrorMessage = oEx.Message,
+                tFTStackTrace = oEx.StackTrace
             });
 
-            MessageBox.Show($"A critical system error has occurred. The application must close.:\n{ex.Message}\n\n(Details have been saved to the Logs folder.)", "Fatal System Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            MessageBox.Show($"A critical system error has occurred. The application must close.:\n{oEx.Message}\n\n(Details have been saved to the Logs folder.)", "Fatal System Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
         }
     }
 

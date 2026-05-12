@@ -37,9 +37,9 @@ namespace TSDCOilPriceMonitoring_REV02
                 };
                 oFadeTimer.Start();
             }
-            catch (Exception ex)
+            catch (Exception oEx)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormMain.Constructor", tFTErrorMessage = ex.Message, tFTStackTrace = ex.StackTrace });
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormMain.Constructor", tFTErrorMessage = oEx.Message, tFTStackTrace = oEx.StackTrace });
             }
         }
 
@@ -52,9 +52,9 @@ namespace TSDCOilPriceMonitoring_REV02
                 poChildForm.TopLevel = false; poChildForm.FormBorderStyle = FormBorderStyle.None; poChildForm.Dock = DockStyle.Fill;
                 opnContent.Controls.Add(poChildForm); opnContent.Tag = poChildForm; poChildForm.BringToFront(); poChildForm.Show();
             }
-            catch (Exception ex)
+            catch (Exception oEx)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormMain.W_PRCxOpenChildForm", tFTErrorMessage = ex.Message, tFTStackTrace = ex.StackTrace });
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormMain.W_PRCxOpenChildForm", tFTErrorMessage = oEx.Message, tFTStackTrace = oEx.StackTrace });
             }
         }
 
@@ -74,9 +74,9 @@ namespace TSDCOilPriceMonitoring_REV02
                     opnActiveIndicator.BringToFront();
                 }
             }
-            catch (Exception ex)
+            catch (Exception oEx)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormMain.W_PRCxHighlightButton", tFTErrorMessage = ex.Message, tFTStackTrace = ex.StackTrace });
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormMain.W_PRCxHighlightButton", tFTErrorMessage = oEx.Message, tFTStackTrace = oEx.StackTrace });
             }
         }
 
@@ -110,9 +110,9 @@ namespace TSDCOilPriceMonitoring_REV02
 
                 this.Controls.Add(opnContent); this.Controls.Add(opnShadow); this.Controls.Add(opnSidebar);
             }
-            catch (Exception ex)
+            catch (Exception oEx)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormMain.W_PRCxSetupUI", tFTErrorMessage = ex.Message, tFTStackTrace = ex.StackTrace });
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormMain.W_PRCxSetupUI", tFTErrorMessage = oEx.Message, tFTStackTrace = oEx.StackTrace });
             }
         }
 
@@ -125,9 +125,9 @@ namespace TSDCOilPriceMonitoring_REV02
                 oBtn.FlatAppearance.BorderSize = 0;
                 oBtn.FlatAppearance.MouseOverBackColor = oHoverBtn;
             }
-            catch (Exception ex)
+            catch (Exception oEx)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormMain.W_PRCopnCreateMenuButton", tFTErrorMessage = ex.Message, tFTStackTrace = ex.StackTrace });
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormMain.W_PRCopnCreateMenuButton", tFTErrorMessage = oEx.Message, tFTStackTrace = oEx.StackTrace });
             }
             return oBtn;
         }

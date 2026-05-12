@@ -32,13 +32,13 @@ namespace TSDCOilPriceMonitoring_REV02
                 odpEnd.Value = DateTime.Now;
                 W_PRCxLoadMasterData();
             }
-            catch (Exception ex)
+            catch (Exception oEx)
             {
                 oLog?.C_PRCxWriteErrorLog(new cmlErrorLog 
                 { 
                     tFTProcessName = "wFilterPanel.W_PRCxInitialize", 
-                    tFTErrorMessage = ex.Message, 
-                    tFTStackTrace = ex.StackTrace 
+                    tFTErrorMessage = oEx.Message, 
+                    tFTStackTrace = oEx.StackTrace 
                 });
             }
         }
@@ -57,13 +57,13 @@ namespace TSDCOilPriceMonitoring_REV02
                 ocbFuelType.DataSource = oFuelType;
                 ocbFuelType.DisplayMember = "tName"; ocbFuelType.ValueMember = "nId";
             }
-            catch (Exception ex)
+            catch (Exception oEx)
             {
                 oLog?.C_PRCxWriteErrorLog(new cmlErrorLog 
                 { 
                     tFTProcessName = "wFilterPanel.W_PRCxLoadMasterData", 
-                    tFTErrorMessage = ex.Message, 
-                    tFTStackTrace = ex.StackTrace 
+                    tFTErrorMessage = oEx.Message, 
+                    tFTStackTrace = oEx.StackTrace 
                 });
             }
         }
@@ -86,13 +86,11 @@ namespace TSDCOilPriceMonitoring_REV02
                 Label olaFuel = new Label { Text = "Fuel Type:", AutoSize = true, Location = new Point(580, 30), Font = new Font("Segoe UI", 9.5f), ForeColor = Color.FromArgb(64, 64, 64) };
                 ocbFuelType = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 160, Location = new Point(655, 27), Font = new Font("Segoe UI", 9.5f) };
 
-                // 🌟 ปุ่ม Search
                 ocnSearch = new Button { Text = "Search", Width = 100, Height = 36, Location = new Point(830, 22), BackColor = Color.FromArgb(0, 120, 212), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Cursor = Cursors.Hand, Font = new Font("Segoe UI", 9.5f, FontStyle.Bold) };
                 ocnSearch.FlatAppearance.BorderSize = 0;
                 W_PRCxApplyRoundedCorners(ocnSearch, 15); // ทำปุ่มขอบโค้ง
                 ocnSearch.Click += (s, e) => oOnSearchClicked?.Invoke(this, e);
 
-                // 🌟 ปุ่ม Export
                 ocnExport = new Button { Text = "Export", Width = 100, Height = 36, Location = new Point(940, 22), BackColor = Color.FromArgb(16, 124, 65), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Cursor = Cursors.Hand, Font = new Font("Segoe UI", 9.5f, FontStyle.Bold) };
                 ocnExport.FlatAppearance.BorderSize = 0;
                 W_PRCxApplyRoundedCorners(ocnExport, 15); // ทำปุ่มขอบโค้ง
@@ -100,9 +98,9 @@ namespace TSDCOilPriceMonitoring_REV02
 
                 this.Controls.AddRange(new Control[] { olaDate, odpStart, olaTo, odpEnd, olaStation, ocbStation, olaFuel, ocbFuelType, ocnSearch, ocnExport });
             }
-            catch (Exception ex)
+            catch (Exception oEx)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFilterPanel.W_PRCxSetupUI", tFTErrorMessage = ex.Message, tFTStackTrace = ex.StackTrace });
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFilterPanel.W_PRCxSetupUI", tFTErrorMessage = oEx.Message, tFTStackTrace = oEx.StackTrace });
             }
         }
 
