@@ -11,8 +11,8 @@ namespace TSDCOilPriceMonitoring_REV02.Class
 
             try
             {
-                cDatabase oDB = new cDatabase();
-                oDB.C_PRCbExecuteNoQuery(cLogQuery.C_PRCtGetInsertErrorLog(), poErrorLog);
+                bool bSuccess = cLogQuery.C_PRCoInsertErrorLog(poErrorLog);
+                if (!bSuccess) throw new Exception("Database Execute Failed.");
             }
             catch (Exception oEx)
             {
@@ -29,8 +29,8 @@ namespace TSDCOilPriceMonitoring_REV02.Class
         {
             try
             {
-                cDatabase oDB = new cDatabase();
-                oDB.C_PRCbExecuteNoQuery(cLogQuery.C_PRCtGetInsertEventLog(), poEventLog);
+                bool bSuccess = cLogQuery.C_PRCbInsertEventLog(poEventLog);
+                if (!bSuccess) throw new Exception("Database Execute Failed.");
             }
             catch (Exception oEx)
             {

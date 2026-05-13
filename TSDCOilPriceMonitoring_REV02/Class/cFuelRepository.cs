@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using TSDCOilPriceMonitoring_REV02.Models;
 
 namespace TSDCOilPriceMonitoring_REV02.Class
@@ -27,7 +25,7 @@ namespace TSDCOilPriceMonitoring_REV02.Class
                     tFTErrorMessage = oEx.Message,
                     tFTStackTrace = oEx.StackTrace
                 });
-                return new List<cmlDropdownItem>(); // คืนค่า List ว่างกลับไปป้องกันแอปแครช
+                return new List<cmlDropdownItem>();
             }
         }
 

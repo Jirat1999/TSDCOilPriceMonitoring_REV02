@@ -1,12 +1,12 @@
 ﻿using Dapper;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using TSDCOilPriceMonitoring_REV02.Models;
 
 namespace TSDCOilPriceMonitoring_REV02.Class
 {
     public class cDatabase
     {
-        public string C_PRCxDatabase(cmlConnectionConfig poConfig)
+        public string C_PRCtDatabase(cmlConnectionConfig poConfig)
         {
             try
             {
@@ -59,7 +59,7 @@ namespace TSDCOilPriceMonitoring_REV02.Class
             }
         }
 
-        public bool C_PRCbExecuteNoQuery(string ptSqlCmd, object poParam = null)
+        public bool C_PRCnExecuteNoQuery(string ptSqlCmd, object poParam = null)
         {
             try
             {

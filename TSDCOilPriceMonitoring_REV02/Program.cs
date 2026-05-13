@@ -34,7 +34,7 @@ namespace TSDCOilPriceMonitoring_REV02
                 oConfig.GetSection("ConnectionConfig").Bind(oConnConfig);
 
                 cDatabase oDB = new cDatabase();
-                cCS.tCS_ConStr = oDB.C_PRCxDatabase(oConnConfig);
+                cCS.tCS_ConStr = oDB.C_PRCtDatabase(oConnConfig);
 
                 Application.Run(new wFormMain());
             }

@@ -7,7 +7,7 @@ namespace TSDCOilPriceMonitoring_REV02
     {
         private Panel opnSidebar, opnContent;
         private Button ocnDashBoard, ocnGridView;
-        private Panel opnActiveIndicator; // แถบสีฟ้าที่จะเลื่อนตามปุ่ม
+        private Panel opnActiveIndicator; 
         private Form oActiveForm = null;
         private cLogService oLog = new cLogService();
         private System.Windows.Forms.Timer oFadeTimer;
@@ -21,14 +21,12 @@ namespace TSDCOilPriceMonitoring_REV02
         {
             try
             {
-                // 🌟 ตั้งค่าให้ Form โปร่งใสก่อนเพื่อทำ Fade-in
                 this.Opacity = 0;
 
                 W_PRCxSetupUI();
                 W_PRCxHighlightButton(ocnDashBoard);
                 W_PRCxOpenChildForm(new wFormDashBoard());
 
-                // 🌟 เริ่ม Animation Fade-in
                 oFadeTimer = new System.Windows.Forms.Timer { Interval = 15 };
                 oFadeTimer.Tick += (s, e) =>
                 {
@@ -39,7 +37,12 @@ namespace TSDCOilPriceMonitoring_REV02
             }
             catch (Exception oEx)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormMain.Constructor", tFTErrorMessage = oEx.Message, tFTStackTrace = oEx.StackTrace });
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog 
+                { 
+                    tFTProcessName = "wFormMain.Constructor", 
+                    tFTErrorMessage = oEx.Message, 
+                    tFTStackTrace = oEx.StackTrace 
+                });
             }
         }
 
@@ -47,14 +50,28 @@ namespace TSDCOilPriceMonitoring_REV02
         {
             try
             {
-                if (oActiveForm != null) { oActiveForm.Close(); oActiveForm.Dispose(); }
+                if (oActiveForm != null) 
+                { 
+                    oActiveForm.Close(); 
+                    oActiveForm.Dispose(); 
+                }
                 oActiveForm = poChildForm;
-                poChildForm.TopLevel = false; poChildForm.FormBorderStyle = FormBorderStyle.None; poChildForm.Dock = DockStyle.Fill;
-                opnContent.Controls.Add(poChildForm); opnContent.Tag = poChildForm; poChildForm.BringToFront(); poChildForm.Show();
+                poChildForm.TopLevel = false; 
+                poChildForm.FormBorderStyle = FormBorderStyle.None; 
+                poChildForm.Dock = DockStyle.Fill;
+                opnContent.Controls.Add(poChildForm); 
+                opnContent.Tag = poChildForm; 
+                poChildForm.BringToFront(); 
+                poChildForm.Show();
             }
             catch (Exception oEx)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormMain.W_PRCxOpenChildForm", tFTErrorMessage = oEx.Message, tFTStackTrace = oEx.StackTrace });
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog 
+                { 
+                    tFTProcessName = "wFormMain.W_PRCxOpenChildForm", 
+                    tFTErrorMessage = oEx.Message, 
+                    tFTStackTrace = oEx.StackTrace 
+                });
             }
         }
 
@@ -67,8 +84,7 @@ namespace TSDCOilPriceMonitoring_REV02
 
                 if (poActiveBtn != null)
                 {
-                    poActiveBtn.BackColor = oHoverBtn; // สีพื้นหลังปุ่มที่ถูกเลือก
-                    // 🌟 Animation แถบเลื่อน (ย้ายตำแหน่งแถบสีฟ้ามาที่ปุ่มที่คลิก)
+                    poActiveBtn.BackColor = oHoverBtn;
                     opnActiveIndicator.Height = poActiveBtn.Height;
                     opnActiveIndicator.Top = poActiveBtn.Top;
                     opnActiveIndicator.BringToFront();
@@ -76,7 +92,12 @@ namespace TSDCOilPriceMonitoring_REV02
             }
             catch (Exception oEx)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormMain.W_PRCxHighlightButton", tFTErrorMessage = oEx.Message, tFTStackTrace = oEx.StackTrace });
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog 
+                { 
+                    tFTProcessName = "wFormMain.W_PRCxHighlightButton", 
+                    tFTErrorMessage = oEx.Message, 
+                    tFTStackTrace = oEx.StackTrace 
+                });
             }
         }
 
@@ -88,11 +109,28 @@ namespace TSDCOilPriceMonitoring_REV02
                 this.Size = new Size(1200, 750);
                 this.StartPosition = FormStartPosition.CenterScreen;
 
-                opnSidebar = new Panel { Dock = DockStyle.Left, Width = 230, BackColor = oSidebarBg };
-                Label olaAppTitle = new Label { Text = "TSDC System", Font = new Font("Segoe UI", 18, FontStyle.Bold), ForeColor = Color.FromArgb(144, 202, 249), TextAlign = ContentAlignment.MiddleCenter, Dock = DockStyle.Top, Height = 100 };
+                opnSidebar = new Panel 
+                { 
+                    Dock = DockStyle.Left, 
+                    Width = 230, 
+                    BackColor = oSidebarBg 
+                };
+                Label olaAppTitle = new Label 
+                { 
+                    Text = "TSDC System", 
+                    Font = new Font("Segoe UI", 18, FontStyle.Bold), 
+                    ForeColor = Color.FromArgb(144, 202, 249), 
+                    TextAlign = ContentAlignment.MiddleCenter, 
+                    Dock = DockStyle.Top, 
+                    Height = 100 
+                };
 
-                // 🌟 สร้างแถบ Active Indicator สีฟ้า
-                opnActiveIndicator = new Panel { Width = 5, BackColor = oActiveBtn, Left = 0 };
+                opnActiveIndicator = new Panel 
+                {
+                    Width = 5, 
+                    BackColor = oActiveBtn, 
+                    Left = 0 
+                };
                 opnSidebar.Controls.Add(opnActiveIndicator);
 
                 ocnDashBoard = W_PRCopnCreateMenuButton("🏠  Dashboard", 100);
@@ -103,7 +141,6 @@ namespace TSDCOilPriceMonitoring_REV02
 
                 opnSidebar.Controls.Add(ocnGridView); opnSidebar.Controls.Add(ocnDashBoard); opnSidebar.Controls.Add(olaAppTitle);
 
-                // เพิ่มเงาให้ Sidebar เล็กน้อยโดยใช้ขอบสีเข้ม
                 Panel opnShadow = new Panel { Dock = DockStyle.Left, Width = 1, BackColor = Color.FromArgb(10, 20, 40) };
 
                 opnContent = new Panel { Dock = DockStyle.Fill, BackColor = oContentBg };
@@ -112,7 +149,12 @@ namespace TSDCOilPriceMonitoring_REV02
             }
             catch (Exception oEx)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormMain.W_PRCxSetupUI", tFTErrorMessage = oEx.Message, tFTStackTrace = oEx.StackTrace });
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog 
+                { 
+                    tFTProcessName = "wFormMain.W_PRCxSetupUI", 
+                    tFTErrorMessage = oEx.Message,
+                    tFTStackTrace = oEx.StackTrace 
+                });
             }
         }
 
@@ -121,13 +163,30 @@ namespace TSDCOilPriceMonitoring_REV02
             Button oBtn = new Button();
             try
             {
-                oBtn = new Button { Text = ptText, Font = new Font("Segoe UI", 11, FontStyle.Regular), ForeColor = Color.White, BackColor = oSidebarBg, FlatStyle = FlatStyle.Flat, TextAlign = ContentAlignment.MiddleLeft, Padding = new Padding(25, 0, 0, 0), Location = new Point(0, pnPositionY), Size = new Size(230, 60), Cursor = Cursors.Hand };
+                oBtn = new Button 
+                { 
+                    Text = ptText, 
+                    Font = new Font("Segoe UI", 11, FontStyle.Regular), 
+                    ForeColor = Color.White, 
+                    BackColor = oSidebarBg, 
+                    FlatStyle = FlatStyle.Flat, 
+                    TextAlign = ContentAlignment.MiddleLeft, 
+                    Padding = new Padding(25, 0, 0, 0), 
+                    Location = new Point(0, pnPositionY), 
+                    Size = new Size(230, 60), 
+                    Cursor = Cursors.Hand 
+                };
                 oBtn.FlatAppearance.BorderSize = 0;
                 oBtn.FlatAppearance.MouseOverBackColor = oHoverBtn;
             }
             catch (Exception oEx)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormMain.W_PRCopnCreateMenuButton", tFTErrorMessage = oEx.Message, tFTStackTrace = oEx.StackTrace });
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog 
+                { 
+                    tFTProcessName = "wFormMain.W_PRCopnCreateMenuButton", 
+                    tFTErrorMessage = oEx.Message, 
+                    tFTStackTrace = oEx.StackTrace 
+                });
             }
             return oBtn;
         }

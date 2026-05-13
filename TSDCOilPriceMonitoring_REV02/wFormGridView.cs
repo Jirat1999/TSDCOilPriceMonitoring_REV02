@@ -12,7 +12,6 @@ namespace TSDCOilPriceMonitoring_REV02
         private Panel opnContent;
         private DataGridView ogdData;
 
-        // 🌟 เพิ่มตัวแปรสำหรับตัวเลือกจำนวนข้อมูล
         private ComboBox ocbLimit;
 
         public wFormGridView()
@@ -24,13 +23,13 @@ namespace TSDCOilPriceMonitoring_REV02
                 W_PRCxSetupUI();
                 this.Load += (s, e) => W_PRCxLoadGridData();
             }
-            catch (Exception ex)
+            catch (Exception oEx)
             {
                 oLog?.C_PRCxWriteErrorLog(new cmlErrorLog
                 {
                     tFTProcessName = "wFormGridView.Constructor",
-                    tFTErrorMessage = ex.Message,
-                    tFTStackTrace = ex.StackTrace
+                    tFTErrorMessage = oEx.Message,
+                    tFTStackTrace = oEx.StackTrace
                 });
             }
         }
@@ -113,51 +112,51 @@ namespace TSDCOilPriceMonitoring_REV02
                 oFilterPanel.oOnSearchClicked += (s, e) => W_PRCxLoadGridData();
                 oFilterPanel.oOnExportClicked += W_PRCxBtnExport_Click;
 
-                opnContent = new Panel 
-                { 
-                    Dock = DockStyle.Fill, 
-                    Padding = new Padding(25) 
+                opnContent = new Panel
+                {
+                    Dock = DockStyle.Fill,
+                    Padding = new Padding(25)
                 };
 
-                Panel opnTopHeader = new Panel 
-                { 
-                    Dock = DockStyle.Top, 
-                    Height = 45, 
-                    Padding = new Padding(0, 0, 0, 10) 
+                Panel opnTopHeader = new Panel
+                {
+                    Dock = DockStyle.Top,
+                    Height = 45,
+                    Padding = new Padding(0, 0, 0, 10)
                 };
 
-                Label olaTitle = new Label 
-                { 
-                    Text = "Fuel Price Details List", 
-                    Font = new Font("Segoe UI", 18, FontStyle.Bold), 
-                    ForeColor = Color.FromArgb(15, 32, 67), 
-                    AutoSize = true, 
-                    Dock = DockStyle.Left 
+                Label olaTitle = new Label
+                {
+                    Text = "Fuel Price Details List",
+                    Font = new Font("Segoe UI", 18, FontStyle.Bold),
+                    ForeColor = Color.FromArgb(15, 32, 67),
+                    AutoSize = true,
+                    Dock = DockStyle.Left
                 };
 
-                Panel opnLimitControls = new Panel 
-                { 
-                    Dock = DockStyle.Right, 
-                    Width = 260 
+                Panel opnLimitControls = new Panel
+                {
+                    Dock = DockStyle.Right,
+                    Width = 260
                 };
-                Label olaLimit = new Label 
-                { 
-                    Text = "Show records:", 
-                    AutoSize = true, 
-                    Location = new Point(40, 5), 
-                    Font = new Font("Segoe UI", 10.5f), 
-                    ForeColor = Color.FromArgb(64, 64, 64) 
+                Label olaLimit = new Label
+                {
+                    Text = "Show records:",
+                    AutoSize = true,
+                    Location = new Point(40, 5),
+                    Font = new Font("Segoe UI", 10.5f),
+                    ForeColor = Color.FromArgb(64, 64, 64)
                 };
 
-                ocbLimit = new ComboBox 
-                { 
-                    DropDownStyle = ComboBoxStyle.DropDownList, 
-                    Width = 100, 
-                    Location = new Point(150, 2), 
-                    Font = new Font("Segoe UI", 10.5f) 
+                ocbLimit = new ComboBox
+                {
+                    DropDownStyle = ComboBoxStyle.DropDownList,
+                    Width = 100,
+                    Location = new Point(150, 2),
+                    Font = new Font("Segoe UI", 10.5f)
                 };
                 ocbLimit.Items.AddRange(new string[] { "50", "100", "500", "All" });
-                ocbLimit.SelectedIndex = 1; 
+                ocbLimit.SelectedIndex = 1;
 
                 ocbLimit.SelectedIndexChanged += (s, e) => W_PRCxLoadGridData();
 
@@ -167,11 +166,11 @@ namespace TSDCOilPriceMonitoring_REV02
                 opnTopHeader.Controls.Add(olaTitle);
                 opnTopHeader.Controls.Add(opnLimitControls);
 
-                Panel opnGridContainer = new Panel 
-                { 
-                    Dock = DockStyle.Fill, 
-                    BackColor = Color.White, 
-                    Padding = new Padding(2) 
+                Panel opnGridContainer = new Panel
+                {
+                    Dock = DockStyle.Fill,
+                    BackColor = Color.White,
+                    Padding = new Padding(2)
                 };
 
                 ogdData = new DataGridView
@@ -203,31 +202,31 @@ namespace TSDCOilPriceMonitoring_REV02
 
                 ogdData.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(249, 250, 252);
 
-                ogdData.Columns.Add(new DataGridViewTextBoxColumn 
+                ogdData.Columns.Add(new DataGridViewTextBoxColumn
                 {
-                    HeaderText = "Effective Date", 
+                    HeaderText = "Effective Date",
                     DataPropertyName = "dEffectiveDate",
-                    DefaultCellStyle = { Format = "dd MMM yyyy" } 
+                    DefaultCellStyle = { Format = "dd MMM yyyy" }
                 });
-                ogdData.Columns.Add(new DataGridViewTextBoxColumn 
-                { 
+                ogdData.Columns.Add(new DataGridViewTextBoxColumn
+                {
                     HeaderText = "Station Name",
-                    DataPropertyName = "tStationName" 
+                    DataPropertyName = "tStationName"
                 });
-                ogdData.Columns.Add(new DataGridViewTextBoxColumn 
-                { 
+                ogdData.Columns.Add(new DataGridViewTextBoxColumn
+                {
                     HeaderText = "Fuel Type",
-                    DataPropertyName = "tFuelName" 
+                    DataPropertyName = "tFuelName"
                 });
-                ogdData.Columns.Add(new DataGridViewTextBoxColumn 
-                { 
-                    HeaderText = "Price (THB)", 
-                    DataPropertyName = "cPricedPrice", 
-                    DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleRight, Format = "N2" } });
+                ogdData.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    HeaderText = "Price (THB)",
+                    DataPropertyName = "cPricedPrice",
+                    DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleRight, Format = "N2" }
+                });
 
                 opnGridContainer.Controls.Add(ogdData);
 
-                // 🌟 ใส่ Grid เข้าไปก่อน แล้วเอา Header วางด้านบนสุด
                 opnContent.Controls.Add(opnGridContainer);
                 opnContent.Controls.Add(opnTopHeader);
 
@@ -236,7 +235,12 @@ namespace TSDCOilPriceMonitoring_REV02
             }
             catch (Exception oEx)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormGridView.W_PRCxSetupUI", tFTErrorMessage = oEx.Message, tFTStackTrace = oEx.StackTrace });
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog 
+                { 
+                    tFTProcessName = "wFormGridView.W_PRCxSetupUI", 
+                    tFTErrorMessage = oEx.Message, 
+                    tFTStackTrace = oEx.StackTrace 
+                });
             }
         }
     }

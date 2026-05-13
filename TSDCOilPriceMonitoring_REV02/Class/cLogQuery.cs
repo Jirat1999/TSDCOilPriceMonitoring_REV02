@@ -5,61 +5,45 @@ namespace TSDCOilPriceMonitoring_REV02.Class
 {
     public class cLogQuery
     {
-        public static string C_PRCtGetInsertErrorLog()
+        public static bool C_PRCoInsertErrorLog(cmlErrorLog poErrorLog)
         {
             try
             {
+                cDatabase oDB = new cDatabase();
                 StringBuilder oSql = new StringBuilder();
 
                 oSql.AppendLine($"INSERT INTO {cCS.tTbl_ErrorLogs} (");
-                oSql.AppendLine("FTProcessName, ");
-                oSql.AppendLine("FTErrorMessage, ");
-                oSql.AppendLine("FTStackTrace");
+                oSql.AppendLine("FTProcessName, FTErrorMessage, FTStackTrace");
                 oSql.AppendLine(") VALUES (");
-                oSql.AppendLine("@tFTProcessName,");
-                oSql.AppendLine("@tFTErrorMessage,");
-                oSql.AppendLine("@tFTStackTrace");
+                oSql.AppendLine("@tFTProcessName, @tFTErrorMessage, @tFTStackTrace");
                 oSql.AppendLine(")");
 
-                return oSql.ToString();
+                return oDB.C_PRCnExecuteNoQuery(oSql.ToString(), poErrorLog);
             }
-            catch (Exception oEx)
+            catch (Exception)
             {
-                new cLogService().C_PRCxWriteErrorLog(new cmlErrorLog
-                {
-                    tFTProcessName = "cLogQuery.C_PRCtGetInsertErrorLog",
-                    tFTErrorMessage = oEx.Message,
-                    tFTStackTrace = oEx.StackTrace
-                });
-                return string.Empty;
+                return false;
             }
         }
 
-        public static string C_PRCtGetInsertEventLog()
+        public static bool C_PRCbInsertEventLog(cmlEventLog poEventLog)
         {
             try
             {
+                cDatabase oDB = new cDatabase();
                 StringBuilder oSql = new StringBuilder();
 
                 oSql.AppendLine($"INSERT INTO {cCS.tTbl_EventLogs} (");
-                oSql.AppendLine("FTEventName, ");
-                oSql.AppendLine("FTDescription");
+                oSql.AppendLine("FTEventName, FTDescription");
                 oSql.AppendLine(") VALUES (");
-                oSql.AppendLine("@tFTEventName, ");
-                oSql.AppendLine("@tFTDescription");
+                oSql.AppendLine("@tFTEventName, @tFTDescription");
                 oSql.AppendLine(")");
 
-                return oSql.ToString();
+                return oDB.C_PRCnExecuteNoQuery(oSql.ToString(), poEventLog);
             }
-            catch (Exception oEx)
+            catch (Exception)
             {
-                new cLogService().C_PRCxWriteErrorLog(new cmlErrorLog
-                {
-                    tFTProcessName = "cLogQuery.C_PRCtGetInsertEventLog",
-                    tFTErrorMessage = oEx.Message,
-                    tFTStackTrace = oEx.StackTrace
-                });
-                return string.Empty;
+                return false;
             }
         }
     }
