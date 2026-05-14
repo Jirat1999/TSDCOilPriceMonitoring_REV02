@@ -8,7 +8,7 @@ namespace TSDCOilPriceMonitoring_REV02
         private Panel opnSidebar, opnContent;
         private Button ocnDashBoard, ocnGridView;
         private Panel opnActiveIndicator; 
-        private Form oActiveForm = null;
+        private Form? oActiveForm = null;
         private cLogService oLog = new cLogService();
         private System.Windows.Forms.Timer oFadeTimer;
 
@@ -117,7 +117,7 @@ namespace TSDCOilPriceMonitoring_REV02
                 };
                 Label olaAppTitle = new Label 
                 { 
-                    Text = "TSDC System", 
+                    Text = "TSDC Oil Price Monitoring", 
                     Font = new Font("Segoe UI", 18, FontStyle.Bold), 
                     ForeColor = Color.FromArgb(144, 202, 249), 
                     TextAlign = ContentAlignment.MiddleCenter, 
@@ -141,9 +141,18 @@ namespace TSDCOilPriceMonitoring_REV02
 
                 opnSidebar.Controls.Add(ocnGridView); opnSidebar.Controls.Add(ocnDashBoard); opnSidebar.Controls.Add(olaAppTitle);
 
-                Panel opnShadow = new Panel { Dock = DockStyle.Left, Width = 1, BackColor = Color.FromArgb(10, 20, 40) };
+                Panel opnShadow = new Panel 
+                { 
+                    Dock = DockStyle.Left, 
+                    Width = 1, 
+                    BackColor = Color.FromArgb(10, 20, 40) 
+                };
 
-                opnContent = new Panel { Dock = DockStyle.Fill, BackColor = oContentBg };
+                opnContent = new Panel 
+                { 
+                    Dock = DockStyle.Fill, 
+                    BackColor = oContentBg 
+                };
 
                 this.Controls.Add(opnContent); this.Controls.Add(opnShadow); this.Controls.Add(opnSidebar);
             }

@@ -1,9 +1,9 @@
 ﻿using System.Text;
 using TSDCOilPriceMonitoring_REV02.Models;
 
-namespace TSDCOilPriceMonitoring_REV02.Class
+namespace TSDCOilPriceMonitoring_REV02.Class.QueryLog
 {
-    public class cLogQuery
+    public class cErrorLogQuery
     {
         public static bool C_PRCoInsertErrorLog(cmlErrorLog poErrorLog)
         {
@@ -19,27 +19,6 @@ namespace TSDCOilPriceMonitoring_REV02.Class
                 oSql.AppendLine(")");
 
                 return oDB.C_PRCnExecuteNoQuery(oSql.ToString(), poErrorLog);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        public static bool C_PRCbInsertEventLog(cmlEventLog poEventLog)
-        {
-            try
-            {
-                cDatabase oDB = new cDatabase();
-                StringBuilder oSql = new StringBuilder();
-
-                oSql.AppendLine($"INSERT INTO {cCS.tTbl_EventLogs} (");
-                oSql.AppendLine("FTEventName, FTDescription");
-                oSql.AppendLine(") VALUES (");
-                oSql.AppendLine("@tFTEventName, @tFTDescription");
-                oSql.AppendLine(")");
-
-                return oDB.C_PRCnExecuteNoQuery(oSql.ToString(), poEventLog);
             }
             catch (Exception)
             {

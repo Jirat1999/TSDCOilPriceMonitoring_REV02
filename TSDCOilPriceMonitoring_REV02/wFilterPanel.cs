@@ -1,13 +1,16 @@
 using System.Drawing.Drawing2D;
 using TSDCOilPriceMonitoring_REV02.Class;
+using TSDCOilPriceMonitoring_REV02.Class.Repository; 
 using TSDCOilPriceMonitoring_REV02.Models;
 
 namespace TSDCOilPriceMonitoring_REV02
 {
     public partial class wFilterPanel : UserControl
     {
-        private cFuelRepository oRepo;
+        private cStationRepository oStationRepo;
+        private cFuelTypeRepository oFuelTypeRepo;
         private cLogService oLog;
+
         private DateTimePicker odpStart, odpEnd;
         private ComboBox ocbStation, ocbFuelType;
         private Button ocnSearch, ocnReset, ocnExport;
@@ -24,8 +27,10 @@ namespace TSDCOilPriceMonitoring_REV02
         {
             try
             {
-                oRepo = new cFuelRepository();
+                oStationRepo = new cStationRepository();
+                oFuelTypeRepo = new cFuelTypeRepository();
                 oLog = new cLogService();
+
                 W_PRCxSetupUI();
                 ocnExport.Visible = pbShowExport;
                 odpStart.Value = DateTime.Now.AddDays(-7);
@@ -47,15 +52,17 @@ namespace TSDCOilPriceMonitoring_REV02
         {
             try
             {
-                List<cmlDropdownItem> oStaions = oRepo.C_PRCaoGetStations();
+                List<cmlDropdownItem> oStaions = oStationRepo.C_PRCaoGetStations();
                 oStaions.Insert(0, new cmlDropdownItem { nId = 0, tName = "--- All Stations ---" });
                 ocbStation.DataSource = oStaions;
-                ocbStation.DisplayMember = "tName"; ocbStation.ValueMember = "nId";
+                ocbStation.DisplayMember = "tName";
+                ocbStation.ValueMember = "nId";
 
-                List<cmlDropdownItem> oFuelType = oRepo.C_PRCaoGetFuelTypes();
+                List<cmlDropdownItem> oFuelType = oFuelTypeRepo.C_PRCaoGetFuelTypes();
                 oFuelType.Insert(0, new cmlDropdownItem { nId = 0, tName = "--- All Fuel Types ---" });
                 ocbFuelType.DataSource = oFuelType;
-                ocbFuelType.DisplayMember = "tName"; ocbFuelType.ValueMember = "nId";
+                ocbFuelType.DisplayMember = "tName";
+                ocbFuelType.ValueMember = "nId";
             }
             catch (Exception oEx)
             {
@@ -72,7 +79,9 @@ namespace TSDCOilPriceMonitoring_REV02
         {
             try
             {
-                this.Dock = DockStyle.Top; this.Height = 70; this.BackColor = Color.White;
+                this.Dock = DockStyle.Top;
+                this.Height = 70;
+                this.BackColor = Color.White;
 
                 Panel opnBottomLine = new Panel
                 {
@@ -82,93 +91,93 @@ namespace TSDCOilPriceMonitoring_REV02
                 };
                 this.Controls.Add(opnBottomLine);
 
-                Label olaDate = new Label 
-                { 
-                    Text = "Date:", 
-                    AutoSize = true, 
-                    Location = new Point(10, 25), 
-                    ForeColor = Color.FromArgb(64, 64, 64) 
+                Label olaDate = new Label
+                {
+                    Text = "Date:",
+                    AutoSize = true,
+                    Location = new Point(10, 25),
+                    ForeColor = Color.FromArgb(64, 64, 64)
                 };
-                odpStart = new DateTimePicker 
-                { 
-                    Format = DateTimePickerFormat.Short, 
-                    Width = 100, 
-                    Location = new Point(50, 21), 
-                    Font = new Font("Segoe UI", 9.5f) 
-                };
-
-                Label olaTo = new Label 
-                { 
-                    Text = "To:", 
-                    AutoSize = true, 
-                    Location = new Point(155, 25), 
-                    ForeColor = Color.FromArgb(64, 64, 64) 
-                };
-                odpEnd = new DateTimePicker 
-                { 
+                odpStart = new DateTimePicker
+                {
                     Format = DateTimePickerFormat.Short,
-                    Width = 100, 
-                    Location = new Point(180, 21), 
-                    Font = new Font("Segoe UI", 9.5f) 
+                    Width = 100,
+                    Location = new Point(50, 21),
+                    Font = new Font("Segoe UI", 9.5f)
                 };
 
-                Label olaStation = new Label 
-                { 
-                    Text = "Station:", 
-                    AutoSize = true, 
-                    Location = new Point(285, 25), 
-                    ForeColor = Color.FromArgb(64, 64, 64) 
+                Label olaTo = new Label
+                {
+                    Text = "To:",
+                    AutoSize = true,
+                    Location = new Point(155, 25),
+                    ForeColor = Color.FromArgb(64, 64, 64)
                 };
-                ocbStation = new ComboBox 
-                { 
-                    DropDownStyle = ComboBoxStyle.DropDownList, 
-                    Width = 130, 
+                odpEnd = new DateTimePicker
+                {
+                    Format = DateTimePickerFormat.Short,
+                    Width = 100,
+                    Location = new Point(180, 21),
+                    Font = new Font("Segoe UI", 9.5f)
+                };
+
+                Label olaStation = new Label
+                {
+                    Text = "Station:",
+                    AutoSize = true,
+                    Location = new Point(285, 25),
+                    ForeColor = Color.FromArgb(64, 64, 64)
+                };
+                ocbStation = new ComboBox
+                {
+                    DropDownStyle = ComboBoxStyle.DropDownList,
+                    Width = 130,
                     Location = new Point(340, 21),
-                    Font = new Font("Segoe UI", 9.5f) 
+                    Font = new Font("Segoe UI", 9.5f)
                 };
 
-                Label olaFuel = new Label 
-                { 
-                    Text = "Fuel:", 
-                    AutoSize = true, 
-                    Location = new Point(475, 25), 
-                    ForeColor = Color.FromArgb(64, 64, 64) 
+                Label olaFuel = new Label
+                {
+                    Text = "Fuel:",
+                    AutoSize = true,
+                    Location = new Point(475, 25),
+                    ForeColor = Color.FromArgb(64, 64, 64)
                 };
-                ocbFuelType = new ComboBox 
-                { 
-                    DropDownStyle = ComboBoxStyle.DropDownList, 
-                    Width = 130, 
-                    Location = new Point(515, 21), 
-                    Font = new Font("Segoe UI", 9.5f) 
+                ocbFuelType = new ComboBox
+                {
+                    DropDownStyle = ComboBoxStyle.DropDownList,
+                    Width = 130,
+                    Location = new Point(515, 21),
+                    Font = new Font("Segoe UI", 9.5f)
                 };
 
-                ocnSearch = new Button 
-                { 
-                    Text = "Search", 
-                    Width = 90, 
-                    Height = 36, 
-                    Location = new Point(655, 18), 
-                    BackColor = Color.FromArgb(0, 120, 212), 
-                    ForeColor = Color.White, 
-                    FlatStyle = FlatStyle.Flat, 
+                ocnSearch = new Button
+                {
+                    Text = "Search",
+                    Width = 90,
+                    Height = 36,
+                    Location = new Point(655, 18),
+                    BackColor = Color.FromArgb(0, 120, 212),
+                    ForeColor = Color.White,
+                    FlatStyle = FlatStyle.Flat,
                     Cursor = Cursors.Hand,
-                    Font = new Font("Segoe UI", 9.5f) 
+                    Font = new Font("Segoe UI", 9.5f)
                 };
                 ocnSearch.FlatAppearance.BorderSize = 0;
-                W_PRCxApplyRoundedCorners(ocnSearch, 8); 
+                W_PRCxApplyRoundedCorners(ocnSearch, 8);
                 ocnSearch.Click += (s, e) => oOnSearchClicked?.Invoke(this, e);
 
-                ocnReset = new Button 
-                { 
-                    Text = "Reset", 
-                    Width = 90, 
+                ocnReset = new Button
+                {
+                    Text = "Reset",
+                    Width = 90,
                     Height = 36,
-                    Location = new Point(750, 18), 
-                    BackColor = Color.FromArgb(108, 117, 125), 
-                    ForeColor = Color.White, 
-                    FlatStyle = FlatStyle.Flat, 
-                    Cursor = Cursors.Hand, 
-                    Font = new Font("Segoe UI", 9.5f) 
+                    Location = new Point(750, 18),
+                    BackColor = Color.FromArgb(108, 117, 125),
+                    ForeColor = Color.White,
+                    FlatStyle = FlatStyle.Flat,
+                    Cursor = Cursors.Hand,
+                    Font = new Font("Segoe UI", 9.5f)
                 };
                 ocnReset.FlatAppearance.BorderSize = 0;
                 W_PRCxApplyRoundedCorners(ocnReset, 8);
@@ -181,17 +190,17 @@ namespace TSDCOilPriceMonitoring_REV02
                     oOnSearchClicked?.Invoke(this, oE);
                 };
 
-                ocnExport = new Button 
-                { 
-                    Text = "Export", 
-                    Width = 90, 
+                ocnExport = new Button
+                {
+                    Text = "Export",
+                    Width = 90,
                     Height = 36,
-                    Location = new Point(845, 18), 
-                    BackColor = Color.FromArgb(3, 169, 244), 
-                    ForeColor = Color.White, 
-                    FlatStyle = FlatStyle.Flat, 
-                    Cursor = Cursors.Hand, 
-                    Font = new Font("Segoe UI", 9.5f) 
+                    Location = new Point(845, 18),
+                    BackColor = Color.FromArgb(3, 169, 244),
+                    ForeColor = Color.White,
+                    FlatStyle = FlatStyle.Flat,
+                    Cursor = Cursors.Hand,
+                    Font = new Font("Segoe UI", 9.5f)
                 };
                 ocnExport.FlatAppearance.BorderSize = 0;
                 W_PRCxApplyRoundedCorners(ocnExport, 8);
@@ -201,11 +210,11 @@ namespace TSDCOilPriceMonitoring_REV02
             }
             catch (Exception oEx)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog 
-                { 
-                    tFTProcessName = "wFilterPanel.W_PRCxSetupUI", 
-                    tFTErrorMessage = oEx.Message, 
-                    tFTStackTrace = oEx.StackTrace 
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog
+                {
+                    tFTProcessName = "wFilterPanel.W_PRCxSetupUI",
+                    tFTErrorMessage = oEx.Message,
+                    tFTStackTrace = oEx.StackTrace
                 });
             }
         }
@@ -225,7 +234,7 @@ namespace TSDCOilPriceMonitoring_REV02
             {
                 oLog?.C_PRCxWriteErrorLog(new cmlErrorLog
                 {
-                    tFTProcessName = "wFilterPanel.W_PRCxSetupUI",
+                    tFTProcessName = "wFilterPanel.W_PRCxApplyRoundedCorners",
                     tFTErrorMessage = oEx.Message,
                     tFTStackTrace = oEx.StackTrace
                 });

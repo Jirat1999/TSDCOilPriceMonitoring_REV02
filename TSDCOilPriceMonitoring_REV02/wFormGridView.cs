@@ -1,12 +1,13 @@
 ﻿using System.Text;
 using TSDCOilPriceMonitoring_REV02.Class;
+using TSDCOilPriceMonitoring_REV02.Class.Repository;
 using TSDCOilPriceMonitoring_REV02.Models;
 
 namespace TSDCOilPriceMonitoring_REV02
 {
     public partial class wFormGridView : Form
     {
-        private cFuelRepository oRepo;
+        private cFuelPriceDetailRepository oRepo;
         private cLogService oLog;
         private wFilterPanel oFilterPanel;
         private Panel opnContent;
@@ -18,7 +19,7 @@ namespace TSDCOilPriceMonitoring_REV02
         {
             try
             {
-                oRepo = new cFuelRepository();
+                oRepo = new cFuelPriceDetailRepository();
                 oLog = new cLogService();
                 W_PRCxSetupUI();
                 this.Load += (s, e) => W_PRCxLoadGridData();
@@ -39,6 +40,17 @@ namespace TSDCOilPriceMonitoring_REV02
             try
             {
                 List<cmlFuelPriceDetail> oDetails = oRepo.C_PRCaoGetFuelPriceDetails(oFilterPanel.dStartDate, oFilterPanel.dEndDate.AddDays(1).AddTicks(-1), oFilterPanel.nStationId, oFilterPanel.nFuelId);
+
+                if (oDetails != null)
+                {
+                    oDetails.ForEach(oItem =>
+                    {
+                        if (!string.IsNullOrEmpty(oItem.tStationName))
+                        {
+                            oItem.tStationName = oItem.tStationName.ToUpper();
+                        }
+                    });
+                }
 
                 int nLimit = 0;
                 if (ocbLimit.SelectedItem != null && ocbLimit.SelectedItem.ToString() != "All")
@@ -85,7 +97,7 @@ namespace TSDCOilPriceMonitoring_REV02
                                 oSw.WriteLine(string.Join(",", tCells));
                             }
                         }
-                        MessageBox.Show("Export สำเร็จ!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Export Successful!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
             }
@@ -235,11 +247,11 @@ namespace TSDCOilPriceMonitoring_REV02
             }
             catch (Exception oEx)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog 
-                { 
-                    tFTProcessName = "wFormGridView.W_PRCxSetupUI", 
-                    tFTErrorMessage = oEx.Message, 
-                    tFTStackTrace = oEx.StackTrace 
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog
+                {
+                    tFTProcessName = "wFormGridView.W_PRCxSetupUI",
+                    tFTErrorMessage = oEx.Message,
+                    tFTStackTrace = oEx.StackTrace
                 });
             }
         }

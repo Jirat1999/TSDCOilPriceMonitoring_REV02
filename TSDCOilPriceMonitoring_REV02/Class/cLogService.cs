@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
-using TSDCOilPriceMonitoring_REV02.Models;
+using TSDCOilPriceMonitoring_REV02.Class.QueryLog;
+using TSDCOilPriceMonitoring_REV02.Models; 
 
 namespace TSDCOilPriceMonitoring_REV02.Class
 {
@@ -11,7 +12,7 @@ namespace TSDCOilPriceMonitoring_REV02.Class
 
             try
             {
-                bool bSuccess = cLogQuery.C_PRCoInsertErrorLog(poErrorLog);
+                bool bSuccess = cErrorLogQuery.C_PRCoInsertErrorLog(poErrorLog);
                 if (!bSuccess) throw new Exception("Database Execute Failed.");
             }
             catch (Exception oEx)
@@ -29,7 +30,7 @@ namespace TSDCOilPriceMonitoring_REV02.Class
         {
             try
             {
-                bool bSuccess = cLogQuery.C_PRCbInsertEventLog(poEventLog);
+                bool bSuccess = cEventLogQuery.C_PRCbInsertEventLog(poEventLog);
                 if (!bSuccess) throw new Exception("Database Execute Failed.");
             }
             catch (Exception oEx)
@@ -69,7 +70,14 @@ namespace TSDCOilPriceMonitoring_REV02.Class
             }
             catch (Exception oEx)
             {
-                try { File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Emergency_Log.txt"), $"[{DateTime.Now}] JSON Error: {oEx.Message} | Process: {poErrorLog.tFTProcessName}\n"); } catch { }
+                try
+                {
+                    File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Emergency_Log.txt"), $"[{DateTime.Now}] JSON Error: {oEx.Message} | Process: {poErrorLog.tFTProcessName}\n");
+                }
+                catch
+                {
+
+                }
             }
         }
     }
