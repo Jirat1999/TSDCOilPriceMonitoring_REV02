@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
+﻿using System.Drawing.Drawing2D;
 using System.Reflection;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using TSDCOilPriceMonitoring_REV02.Class;
+using TSDCOilPriceMonitoring_REV02.Class.Repository;
 using TSDCOilPriceMonitoring_REV02.Models;
-using TSDCOilPriceMonitoring_REV02.Class.Repository; 
 
 namespace TSDCOilPriceMonitoring_REV02
 {
@@ -36,11 +31,20 @@ namespace TSDCOilPriceMonitoring_REV02
 
                 this.Load += (s, e) => W_PRCxLoadDashboardCard();
 
-                oLog.C_PRCxWriteEventLog(new cmlEventLog { tFTEventName = "AppStart", tFTDescription = "Dashboard Initialized." });
+                oLog.C_PRCxWriteEventLog(new cmlEventLog
+                {
+                    tFTEventName = "AppStart",
+                    tFTDescription = "Dashboard Initialized."
+                });
             }
             catch (Exception ex)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFormDashBoard.Constructor", tFTErrorMessage = ex.Message, tFTStackTrace = ex.StackTrace });
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog
+                {
+                    tFTProcessName = "wFormDashBoard.Constructor",
+                    tFTErrorMessage = ex.Message,
+                    tFTStackTrace = ex.StackTrace
+                });
             }
         }
 
@@ -58,18 +62,19 @@ namespace TSDCOilPriceMonitoring_REV02
 
                 DateTime dStart = oFilterPanel.dStartDate;
                 DateTime dEnd = oFilterPanel.dEndDate.AddDays(1).AddTicks(-1);
-                int nStation = oFilterPanel.nStationId;
-                int nFuel = oFilterPanel.nFuelId;
+
+                List<int> aStations = oFilterPanel.aStationIds;
+                List<int> aFuels = oFilterPanel.aFuelIds;
 
                 List<cmlFuelSummary> oSummaries = await Task.Run(() =>
-                    oRepo.C_PRCaoGetFuelSummary(dStart, dEnd, nStation, nFuel)
+                    oRepo.C_PRCaoGetFuelSummary(dStart, dEnd, aStations, aFuels)
                 );
 
                 oLoading.W_PRCxStop();
                 opnDashBoard.Visible = true;
                 opnDashBoard.SuspendLayout();
 
-                if (oSummaries.Count > 0)
+                if (oSummaries != null && oSummaries.Count > 0)
                 {
                     foreach (cmlFuelSummary oItem in oSummaries)
                     {
@@ -88,6 +93,8 @@ namespace TSDCOilPriceMonitoring_REV02
                         opnDashBoard.Controls.Add(opnCard);
                         oAnimationQueue.Enqueue(opnCard);
                     }
+
+                    W_PRCxCenterDashboardContent();
 
                     if (oStaggerTimer == null)
                     {
@@ -128,12 +135,16 @@ namespace TSDCOilPriceMonitoring_REV02
                     Label olaNoData = new Label
                     {
                         Text = "No data found.",
-                        AutoSize = true,
+                        AutoSize = false,
+                        TextAlign = ContentAlignment.MiddleCenter,
+                        Width = opnDashBoard.ClientSize.Width - 30,
+                        Height = 100,
                         Font = new Font("Segoe UI", 12),
                         ForeColor = Color.Gray,
-                        Margin = new Padding(20)
+                        Margin = new Padding(15)
                     };
                     opnDashBoard.Controls.Add(olaNoData);
+                    W_PRCxCenterDashboardContent();
                 }
 
                 opnDashBoard.ResumeLayout();
@@ -150,6 +161,40 @@ namespace TSDCOilPriceMonitoring_REV02
                 if (oLoading != null) oLoading.W_PRCxStop();
                 if (opnDashBoard != null) opnDashBoard.Visible = true;
             }
+        }
+
+        private void W_PRCxCenterDashboardContent()
+        {
+            try
+            {
+                if (opnDashBoard.Controls.Count == 0) return;
+
+                if (opnDashBoard.Controls.Count == 1 && opnDashBoard.Controls[0] is Label lbl)
+                {
+                    lbl.Width = opnDashBoard.ClientSize.Width - 30;
+                    opnDashBoard.Padding = new Padding(15);
+                    return;
+                }
+
+                int nCardWidth = 350;
+                int nAvailableWidth = opnDashBoard.ClientSize.Width;
+
+                int nColumns = nAvailableWidth / nCardWidth;
+
+                if (nColumns > opnDashBoard.Controls.Count)
+                    nColumns = opnDashBoard.Controls.Count;
+
+                if (nColumns <= 0) nColumns = 1;
+
+                int nTotalContentWidth = nColumns * nCardWidth;
+
+                int nPaddingLeft = (nAvailableWidth - nTotalContentWidth) / 2;
+
+                if (nPaddingLeft < 15) nPaddingLeft = 15;
+
+                opnDashBoard.Padding = new Padding(nPaddingLeft, 15, 0, 15);
+            }
+            catch { }
         }
 
         private Panel W_PRCopnCreateCard(string ptTitle, string ptDetails)
@@ -277,6 +322,8 @@ namespace TSDCOilPriceMonitoring_REV02
                     Padding = new Padding(15)
                 };
                 typeof(FlowLayoutPanel).GetProperty("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance)?.SetValue(opnDashBoard, true, null);
+
+                opnDashBoard.Resize += (s, e) => W_PRCxCenterDashboardContent();
 
                 oLoading = new wLoadingPanel();
                 this.Controls.Add(oLoading);

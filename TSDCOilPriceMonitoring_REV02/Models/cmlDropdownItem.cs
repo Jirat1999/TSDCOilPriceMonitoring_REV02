@@ -3,6 +3,6 @@
     public class cmlDropdownItem
     {
         public int nId { get; set; }
-        public string tName { get; set; }
+        public string? tName { get; set; }
     }
 }

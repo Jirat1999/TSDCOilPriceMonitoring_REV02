@@ -2,6 +2,6 @@
 {
     public class cmlAppConfig
     {
-        public string tMode { get; set; }
+        public string? tMode { get; set; }
     }
 }

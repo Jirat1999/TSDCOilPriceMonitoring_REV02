@@ -2,7 +2,7 @@
 {
     public class cmlEventLog
     {
-        public string tFTEventName { get; set; }
-        public string tFTDescription { get; set; }
+        public string? tFTEventName { get; set; }
+        public string? tFTDescription { get; set; }
     }
 }

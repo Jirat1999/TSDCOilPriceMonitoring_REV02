@@ -7,7 +7,7 @@ namespace TSDCOilPriceMonitoring_REV02.Class.Repository
     {
         private readonly cLogService oLog = new cLogService();
 
-        public List<cmlFuelPriceDetail> C_PRCaoGetFuelPriceDetails(DateTime pdStart, DateTime pdEnd, int pnStationId, int pnFuelId)
+        public List<cmlFuelPriceDetail> C_PRCaoGetFuelPriceDetails(DateTime pdStart, DateTime pdEnd, List<int> paStationIds, List<int> paFuelIds)
         {
             try
             {
@@ -19,11 +19,19 @@ namespace TSDCOilPriceMonitoring_REV02.Class.Repository
                 oSql.AppendLine($"JOIN {cCS.tTbl_FuelTypes} F ON P.FNFuelTypeId = F.FNFuelTypeId");
                 oSql.AppendLine("WHERE P.FDEffectiveDate BETWEEN @Start AND @End");
 
-                if (pnStationId > 0) oSql.AppendLine("  AND P.FNStationId = @StationId");
-                if (pnFuelId > 0) oSql.AppendLine("  AND P.FNFuelTypeId = @FuelId");
+                if (paStationIds != null && paStationIds.Count > 0)
+                {
+                    oSql.AppendLine($"  AND P.FNStationId IN ({string.Join(",", paStationIds)})");
+                }
+
+                if (paFuelIds != null && paFuelIds.Count > 0)
+                {
+                    oSql.AppendLine($"  AND P.FNFuelTypeId IN ({string.Join(",", paFuelIds)})");
+                }
+
                 oSql.AppendLine("ORDER BY P.FDEffectiveDate DESC");
 
-                var oParams = new { Start = pdStart, End = pdEnd, StationId = pnStationId, FuelId = pnFuelId };
+                var oParams = new { Start = pdStart, End = pdEnd };
                 return oDB.C_PRCaQuerytoListObj<cmlFuelPriceDetail>(oSql.ToString(), oParams);
             }
             catch (Exception oEx)

@@ -39,7 +39,12 @@ namespace TSDCOilPriceMonitoring_REV02
         {
             try
             {
-                List<cmlFuelPriceDetail> oDetails = oRepo.C_PRCaoGetFuelPriceDetails(oFilterPanel.dStartDate, oFilterPanel.dEndDate.AddDays(1).AddTicks(-1), oFilterPanel.nStationId, oFilterPanel.nFuelId);
+                List<cmlFuelPriceDetail> oDetails = oRepo.C_PRCaoGetFuelPriceDetails(
+                    oFilterPanel.dStartDate,
+                    oFilterPanel.dEndDate.AddDays(1).AddTicks(-1),
+                    oFilterPanel.aStationIds,
+                    oFilterPanel.aFuelIds
+                );
 
                 if (oDetails != null)
                 {
@@ -58,10 +63,10 @@ namespace TSDCOilPriceMonitoring_REV02
                     int.TryParse(ocbLimit.SelectedItem.ToString(), out nLimit);
                 }
 
-                var oDisplayData = nLimit > 0 ? oDetails.Take(nLimit).ToList() : oDetails;
+                var oDisplayData = (nLimit > 0 && oDetails != null) ? oDetails.Take(nLimit).ToList() : oDetails;
 
-                ogdData.DataSource = oDisplayData.Count > 0 ? oDisplayData : null;
-                if (oDisplayData.Count > 0) ogdData.ClearSelection();
+                ogdData.DataSource = (oDisplayData != null && oDisplayData.Count > 0) ? oDisplayData : null;
+                if (oDisplayData != null && oDisplayData.Count > 0) ogdData.ClearSelection();
             }
             catch (Exception oEx)
             {
@@ -97,7 +102,7 @@ namespace TSDCOilPriceMonitoring_REV02
                                 oSw.WriteLine(string.Join(",", tCells));
                             }
                         }
-                        MessageBox.Show("Export Successful!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Export สำเร็จ!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
             }
@@ -149,13 +154,13 @@ namespace TSDCOilPriceMonitoring_REV02
                 Panel opnLimitControls = new Panel
                 {
                     Dock = DockStyle.Right,
-                    Width = 260
+                    Width = 300
                 };
                 Label olaLimit = new Label
                 {
                     Text = "Show records:",
                     AutoSize = true,
-                    Location = new Point(40, 5),
+                    Location = new Point(10, 5), 
                     Font = new Font("Segoe UI", 10.5f),
                     ForeColor = Color.FromArgb(64, 64, 64)
                 };
@@ -164,7 +169,7 @@ namespace TSDCOilPriceMonitoring_REV02
                 {
                     DropDownStyle = ComboBoxStyle.DropDownList,
                     Width = 100,
-                    Location = new Point(150, 2),
+                    Location = new Point(140, 2),  
                     Font = new Font("Segoe UI", 10.5f)
                 };
                 ocbLimit.Items.AddRange(new string[] { "50", "100", "500", "All" });

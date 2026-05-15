@@ -3,8 +3,8 @@
     public class cmlFuelPriceDetail
     {
         public DateTime dEffectiveDate { get; set; }
-        public string tStationName { get; set; }
-        public string tFuelName { get; set; }
+        public string? tStationName { get; set; }
+        public string? tFuelName { get; set; }
         public decimal cPricedPrice { get; set; }
     }
 }
