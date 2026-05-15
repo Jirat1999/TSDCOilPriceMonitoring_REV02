@@ -148,8 +148,13 @@ namespace TSDCOilPriceMonitoring_REV02
                         opicLogo.Paint += (s, e) =>
                         {
                             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                            e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(144, 202, 249)), 10, 10, 60, 60);
-                            e.Graphics.DrawString("TSDC", new Font("Segoe UI", 12, FontStyle.Bold), Brushes.DarkBlue, new PointF(15, 30));
+
+                            using (SolidBrush oBrush = new SolidBrush(Color.FromArgb(144, 202, 249)))
+                            using (Font oFont = new Font("Segoe UI", 12, FontStyle.Bold))
+                            {
+                                e.Graphics.FillEllipse(oBrush, 10, 10, 60, 60);
+                                e.Graphics.DrawString("TSDC", oFont, Brushes.DarkBlue, new PointF(15, 30));
+                            }
                         };
                     }
                 }

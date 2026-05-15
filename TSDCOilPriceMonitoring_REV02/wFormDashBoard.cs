@@ -247,13 +247,15 @@ namespace TSDCOilPriceMonitoring_REV02
                 {
                     try
                     {
-                        GraphicsPath oPath = new GraphicsPath();
-                        int nRadius = 20;
-                        oPath.AddArc(0, 0, nRadius, nRadius, 180, 90);
-                        oPath.AddArc(opnCard.Width - nRadius, 0, nRadius, nRadius, 270, 90);
-                        oPath.AddArc(opnCard.Width - nRadius, opnCard.Height - nRadius, nRadius, nRadius, 0, 90);
-                        oPath.AddArc(0, opnCard.Height - nRadius, nRadius, nRadius, 90, 90);
-                        opnCard.Region = new Region(oPath);
+                        using (GraphicsPath oPath = new GraphicsPath())
+                        {
+                            int nRadius = 20;
+                            oPath.AddArc(0, 0, nRadius, nRadius, 180, 90);
+                            oPath.AddArc(opnCard.Width - nRadius, 0, nRadius, nRadius, 270, 90);
+                            oPath.AddArc(opnCard.Width - nRadius, opnCard.Height - nRadius, nRadius, nRadius, 0, 90);
+                            oPath.AddArc(0, opnCard.Height - nRadius, nRadius, nRadius, 90, 90);
+                            opnCard.Region = new Region(oPath);
+                        }
                     }
                     catch { }
                 };
