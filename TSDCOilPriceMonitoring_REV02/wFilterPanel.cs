@@ -69,11 +69,11 @@ namespace TSDCOilPriceMonitoring_REV02
             }
             catch (Exception oEx)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog 
-                { 
-                    tFTProcessName = "wFilterPanel.W_PRCxInitialize", 
-                    tFTErrorMessage = oEx.Message, 
-                    tFTStackTrace = oEx.StackTrace 
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog
+                {
+                    tFTProcessName = "wFilterPanel.W_PRCxInitialize",
+                    tFTErrorMessage = oEx.Message,
+                    tFTStackTrace = oEx.StackTrace
                 });
             }
         }
@@ -104,16 +104,43 @@ namespace TSDCOilPriceMonitoring_REV02
                     foreach (var oItem in oFuelType) oclbFuelType.Items.Add(oItem);
                 }
 
-                if (oclbStation.Items.Count > 0) oclbStation.SetItemChecked(0, true);
-                if (oclbFuelType.Items.Count > 0) oclbFuelType.SetItemChecked(0, true);
+                bIsUpdatingStation = true;
+                bool bFoundPTT = false;
+
+                for (int i = 1; i < oclbStation.Items.Count; i++)
+                {
+                    cmlDropdownItem oItem = (cmlDropdownItem)oclbStation.Items[i];
+                    if (oItem.tName != null && oItem.tName.ToUpper().Contains("PTT"))
+                    {
+                        oclbStation.SetItemChecked(i, true);
+                        obtnStation.Text = "1 Selected";
+                        bFoundPTT = true;
+                        break;
+                    }
+                }
+
+                if (!bFoundPTT && oclbStation.Items.Count > 0)
+                {
+                    oclbStation.SetItemChecked(0, true);
+                    obtnStation.Text = "--- All Stations ---";
+                }
+                bIsUpdatingStation = false;
+
+                bIsUpdatingFuel = true;
+                if (oclbFuelType.Items.Count > 0)
+                {
+                    oclbFuelType.SetItemChecked(0, true);
+                    obtnFuelType.Text = "--- All Fuel Types ---";
+                }
+                bIsUpdatingFuel = false;
             }
             catch (Exception oEx)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog 
-                { 
-                    tFTProcessName = "wFilterPanel.W_PRCxLoadMasterData", 
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog
+                {
+                    tFTProcessName = "wFilterPanel.W_PRCxLoadMasterData",
                     tFTErrorMessage = oEx.Message,
-                    tFTStackTrace = oEx.StackTrace 
+                    tFTStackTrace = oEx.StackTrace
                 });
             }
         }
@@ -134,20 +161,50 @@ namespace TSDCOilPriceMonitoring_REV02
                 };
                 this.Controls.Add(opnBottomLine);
 
-                Label olaDate = new Label { Text = "Date:", AutoSize = true, Location = new Point(15, 23), ForeColor = Color.FromArgb(64, 64, 64) };
-                odpStart = new DateTimePicker { Format = DateTimePickerFormat.Short, Width = 140, Location = new Point(65, 20), Font = new Font("Segoe UI", 9.5f) };
+                Label olaDate = new Label 
+                { 
+                    Text = "Date:", 
+                    AutoSize = true,
+                    Location = new Point(15, 23), 
+                    ForeColor = Color.FromArgb(64, 64, 64)
+                };
+                odpStart = new DateTimePicker 
+                { 
+                    Format = DateTimePickerFormat.Short, 
+                    Width = 140, 
+                    Location = new Point(65, 20), 
+                    Font = new Font("Segoe UI", 9.5f)
+                };
 
-                Label olaTo = new Label { Text = "To:", AutoSize = true, Location = new Point(225, 23), ForeColor = Color.FromArgb(64, 64, 64) };
-                odpEnd = new DateTimePicker { Format = DateTimePickerFormat.Short, Width = 140, Location = new Point(260, 20), Font = new Font("Segoe UI", 9.5f) };
+                Label olaTo = new Label 
+                { 
+                    Text = "To:", 
+                    AutoSize = true, 
+                    Location = new Point(225, 23),
+                    ForeColor = Color.FromArgb(64, 64, 64) 
+                };
+                odpEnd = new DateTimePicker 
+                { 
+                    Format = DateTimePickerFormat.Short,
+                    Width = 140, 
+                    Location = new Point(260, 20), 
+                    Font = new Font("Segoe UI", 9.5f) 
+                };
 
-                Label olaStation = new Label { Text = "Station:", AutoSize = true, Location = new Point(15, 73), ForeColor = Color.FromArgb(64, 64, 64) };
+                Label olaStation = new Label 
+                { 
+                    Text = "Station:", 
+                    AutoSize = true,
+                    Location = new Point(15, 73),
+                    ForeColor = Color.FromArgb(64, 64, 64)
+                };
 
                 obtnStation = new Button
                 {
                     Text = "--- All Stations ---",
-                    Width = 220, 
+                    Width = 220,
                     Height = 32,
-                    Location = new Point(80, 68), 
+                    Location = new Point(80, 68),
                     BackColor = Color.White,
                     FlatStyle = FlatStyle.Flat,
                     TextAlign = ContentAlignment.MiddleLeft,
@@ -156,14 +213,19 @@ namespace TSDCOilPriceMonitoring_REV02
                 obtnStation.FlatAppearance.BorderColor = Color.LightGray;
                 oDropStation = W_PRCoCreateMultiSelectDropdown(obtnStation, out oclbStation, "Station");
 
-                Label olaFuel = new Label { Text = "Fuel:", AutoSize = true, Location = new Point(320, 73), ForeColor = Color.FromArgb(64, 64, 64) };
+                Label olaFuel = new Label 
+                { 
+                    Text = "Fuel:", 
+                    AutoSize = true, Location = new Point(320, 73), 
+                    ForeColor = Color.FromArgb(64, 64, 64)
+                };
 
                 obtnFuelType = new Button
                 {
                     Text = "--- All Fuel Types ---",
-                    Width = 220, 
+                    Width = 220,
                     Height = 32,
-                    Location = new Point(365, 68), 
+                    Location = new Point(365, 68),
                     BackColor = Color.White,
                     FlatStyle = FlatStyle.Flat,
                     TextAlign = ContentAlignment.MiddleLeft,
@@ -202,15 +264,35 @@ namespace TSDCOilPriceMonitoring_REV02
                 };
                 ocnReset.FlatAppearance.BorderSize = 0;
                 W_PRCxApplyRoundedCorners(ocnReset, 8);
+
                 ocnReset.Click += (oSender, oE) =>
                 {
                     odpStart.Value = DateTime.Now.AddDays(-7);
                     odpEnd.Value = DateTime.Now;
 
                     bIsUpdatingStation = true;
-                    for (int i = 0; i < oclbStation.Items.Count; i++) oclbStation.SetItemChecked(i, i == 0);
+                    bool bFoundPTT = false;
+
+                    for (int i = 0; i < oclbStation.Items.Count; i++) oclbStation.SetItemChecked(i, false);
+
+                    for (int i = 1; i < oclbStation.Items.Count; i++)
+                    {
+                        cmlDropdownItem oItem = (cmlDropdownItem)oclbStation.Items[i];
+                        if (oItem.tName != null && oItem.tName.ToUpper().Contains("PTT"))
+                        {
+                            oclbStation.SetItemChecked(i, true);
+                            obtnStation.Text = "1 Selected";
+                            bFoundPTT = true;
+                            break;
+                        }
+                    }
+
+                    if (!bFoundPTT && oclbStation.Items.Count > 0)
+                    {
+                        oclbStation.SetItemChecked(0, true);
+                        obtnStation.Text = "--- All Stations ---";
+                    }
                     bIsUpdatingStation = false;
-                    obtnStation.Text = "--- All Stations ---";
 
                     bIsUpdatingFuel = true;
                     for (int i = 0; i < oclbFuelType.Items.Count; i++) oclbFuelType.SetItemChecked(i, i == 0);
@@ -240,7 +322,12 @@ namespace TSDCOilPriceMonitoring_REV02
             }
             catch (Exception oEx)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { tFTProcessName = "wFilterPanel.W_PRCxSetupUI", tFTErrorMessage = oEx.Message, tFTStackTrace = oEx.StackTrace });
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog 
+                { 
+                    tFTProcessName = "wFilterPanel.W_PRCxSetupUI",
+                    tFTErrorMessage = oEx.Message,
+                    tFTStackTrace = oEx.StackTrace 
+                });
             }
         }
 

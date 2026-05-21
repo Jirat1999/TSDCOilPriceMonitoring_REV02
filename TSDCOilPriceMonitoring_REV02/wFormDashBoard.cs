@@ -1,4 +1,5 @@
-﻿using System.Drawing.Drawing2D;
+﻿using FontAwesome.Sharp; 
+using System.Drawing.Drawing2D;
 using System.Reflection;
 using TSDCOilPriceMonitoring_REV02.Class;
 using TSDCOilPriceMonitoring_REV02.Class.Repository;
@@ -16,6 +17,16 @@ namespace TSDCOilPriceMonitoring_REV02
 
         private Queue<Panel> oAnimationQueue = new Queue<Panel>();
         private System.Windows.Forms.Timer oStaggerTimer;
+
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle |= 0x02000000;
+                return cp;
+            }
+        }
 
         public wFormDashBoard()
         {
@@ -78,13 +89,7 @@ namespace TSDCOilPriceMonitoring_REV02
                 {
                     foreach (cmlFuelSummary oItem in oSummaries)
                     {
-                        string tDetail = $"🏷️ Station : {oItem.tStationName}\n\n" +
-                                         $"📈 Averages : {oItem.cAvgPrice:F2} ฿\n" +
-                                         $"📉 Lowest Price : {oItem.cMinPrice:F2} ฿\n" +
-                                         $"🚀 Highest Price : {oItem.cMaxPrice:F2} ฿\n\n" +
-                                         $"📊 Records found : {oItem.nTotalRecords} items";
-
-                        Panel opnCard = W_PRCopnCreateCard($"{oItem.tStationName} - {oItem.tFuelName}", tDetail);
+                        Panel opnCard = W_PRCopnCreateCard(oItem, dStart, oFilterPanel.dEndDate);
 
                         opnCard.Visible = false;
                         opnCard.Tag = 0;
@@ -98,10 +103,12 @@ namespace TSDCOilPriceMonitoring_REV02
 
                     if (oStaggerTimer == null)
                     {
-                        int nMaxStep = 15;
+                        int nMaxStep = 10; 
                         oStaggerTimer = new System.Windows.Forms.Timer { Interval = 15 };
                         oStaggerTimer.Tick += (s, e) =>
                         {
+                            opnDashBoard.SuspendLayout();
+
                             if (oAnimationQueue.Count > 0)
                             {
                                 Panel oCard = oAnimationQueue.Peek();
@@ -113,6 +120,7 @@ namespace TSDCOilPriceMonitoring_REV02
                                     float fProgress = (float)nCurStep / nMaxStep;
                                     float fEaseOut = 1f - (float)Math.Pow(1f - fProgress, 2);
                                     int nMoveY = 120 - (int)(fEaseOut * 105);
+
                                     oCard.Margin = new Padding(15, nMoveY, 15, 30 - nMoveY);
                                     oCard.Tag = nCurStep + 1;
                                 }
@@ -126,6 +134,8 @@ namespace TSDCOilPriceMonitoring_REV02
                             {
                                 oStaggerTimer.Stop();
                             }
+
+                            opnDashBoard.ResumeLayout(true);
                         };
                     }
                     oStaggerTimer.Start();
@@ -157,7 +167,6 @@ namespace TSDCOilPriceMonitoring_REV02
                     tFTErrorMessage = ex.Message,
                     tFTStackTrace = ex.StackTrace
                 });
-
                 if (oLoading != null) oLoading.W_PRCxStop();
                 if (opnDashBoard != null) opnDashBoard.Visible = true;
             }
@@ -176,132 +185,180 @@ namespace TSDCOilPriceMonitoring_REV02
                     return;
                 }
 
-                int nCardWidth = 350;
                 int nAvailableWidth = opnDashBoard.ClientSize.Width;
+                int nCardWidth = 360;
 
-                int nColumns = nAvailableWidth / nCardWidth;
+                int nColumns = Math.Max(1, nAvailableWidth / nCardWidth);
+
+                if (nColumns > 3) nColumns = 3;
 
                 if (nColumns > opnDashBoard.Controls.Count)
                     nColumns = opnDashBoard.Controls.Count;
 
-                if (nColumns <= 0) nColumns = 1;
+                int nTotalContentWidth = nColumns * 350;
+                int nPaddingLeft = Math.Max(15, (nAvailableWidth - nTotalContentWidth) / 2);
 
-                int nTotalContentWidth = nColumns * nCardWidth;
-
-                int nPaddingLeft = (nAvailableWidth - nTotalContentWidth) / 2;
-
-                if (nPaddingLeft < 15) nPaddingLeft = 15;
-
-                opnDashBoard.Padding = new Padding(nPaddingLeft, 15, 0, 15);
+                opnDashBoard.Padding = new Padding(nPaddingLeft, 15, 15, 15);
             }
             catch { }
         }
 
-        private Panel W_PRCopnCreateCard(string ptTitle, string ptDetails)
+        private Panel W_PRCpanelCreateDetailRow(IconChar poIcon, string ptText, Color poColor)
+        {
+            Panel opnRow = new Panel 
+            { 
+                Width = 280, 
+                Height = 28, 
+                BackColor = Color.Transparent 
+            };
+            IconPictureBox opicIcon = new IconPictureBox
+            {
+                IconChar = poIcon,
+                IconColor = poColor,
+                Size = new Size(20, 20),
+                Location = new Point(0, 2),
+                SizeMode = PictureBoxSizeMode.Zoom
+            };
+            Label olaText = new Label
+            {
+                Text = ptText,
+                Font = new Font("Segoe UI", 10.5f),
+                ForeColor = Color.FromArgb(80, 80, 80),
+                AutoSize = true,
+                Location = new Point(30, 2)
+            };
+            opnRow.Controls.Add(opicIcon);
+            opnRow.Controls.Add(olaText);
+            return opnRow;
+        }
+
+        private Panel W_PRCopnCreateCard(cmlFuelSummary oItem, DateTime dStart, DateTime dEndDisplay)
         {
             try
             {
+                string tStationName = oItem.tStationName.Trim();
+                string tFuelName = oItem.tFuelName.Trim().ToUpper();
+
+                Color oHeaderColor = Color.FromArgb(0, 120, 212);
+
+                if (tFuelName.Contains("วี-เพาเวอร์ แก๊สโซฮอล์") || tFuelName.Contains("ซูเปอร์พาวเวอร์") || (tFuelName.Contains("95") && tFuelName.Contains("พรีเมียม"))) oHeaderColor = Color.FromArgb(183, 28, 28);
+                else if (tFuelName.Contains("วี-เพาเวอร์ ดีเซล") || tFuelName.Contains("ดีเซลพรีเมียม")) oHeaderColor = Color.FromArgb(40, 40, 40);
+                else if (tFuelName.Contains("เบนซิน 95") || tFuelName.Contains("BENZINE")) oHeaderColor = Color.FromArgb(245, 127, 23);
+                else if (tFuelName.Contains("E20")) oHeaderColor = Color.FromArgb(0, 105, 92);
+                else if (tFuelName.Contains("E85")) oHeaderColor = Color.FromArgb(106, 27, 154);
+                else if (tFuelName.Contains("91")) oHeaderColor = Color.FromArgb(46, 125, 50);
+                else if (tFuelName.Contains("95")) oHeaderColor = Color.FromArgb(230, 81, 0);
+                else if (tFuelName.Contains("B20")) oHeaderColor = Color.FromArgb(198, 40, 40);
+                else if (tFuelName.Contains("ดีเซล") || tFuelName.Contains("DIESEL") || tFuelName.Contains("DISEL") || tFuelName.Contains("ฟิวเซฟ")) oHeaderColor = Color.FromArgb(21, 101, 192);
+                else if (tFuelName.Contains("NGV")) oHeaderColor = Color.FromArgb(130, 119, 23);
+
                 Panel opnCard = new Panel
                 {
                     Width = 320,
-                    AutoSize = true,
-                    MinimumSize = new Size(320, 210),
+                    Height = 340, 
                     BackColor = Color.White,
                     Margin = new Padding(15)
                 };
 
-                Panel opnHeader = new Panel
-                {
-                    Dock = DockStyle.Top,
-                    Height = 55,
-                    BackColor = Color.FromArgb(0, 120, 212)
+                Panel opnHeader = new Panel 
+                { 
+                    Dock = DockStyle.Top, 
+                    Height = 80, 
+                    BackColor = oHeaderColor 
                 };
 
-                Label olaTitle = new Label
+                PictureBox opicStationLogo = new PictureBox 
+                { 
+                    Size = new Size(50, 50),
+                    Location = new Point(15, 15), 
+                    SizeMode = PictureBoxSizeMode.Zoom,
+                    BackColor = Color.Transparent 
+                };
+                string tImgFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "img");
+
+                if (Directory.Exists(tImgFolder))
                 {
-                    Text = ptTitle.ToUpper(),
+                    string[] aFiles = Directory.GetFiles(tImgFolder, $"{tStationName}.*", SearchOption.TopDirectoryOnly);
+                    if (aFiles.Length > 0) opicStationLogo.Image = Image.FromFile(aFiles[0]);
+                    else
+                    {
+                        opicStationLogo.Paint += (s, e) =>
+                        {
+                            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                            e.Graphics.FillEllipse(new SolidBrush(Color.White), 0, 0, 50, 50);
+                            e.Graphics.DrawString(tStationName.Substring(0, 1), new Font("Segoe UI", 16, FontStyle.Bold), Brushes.Blue, new PointF(12, 10));
+                        };
+                    }
+                }
+                opnHeader.Controls.Add(opicStationLogo);
+
+                Label olaTitle = new Label 
+                { 
+                    Text = $"{tStationName} - {tFuelName}".ToUpper(), 
                     ForeColor = Color.White,
-                    Font = new Font("Segoe UI", 13, FontStyle.Bold),
-                    AutoSize = false,
-                    Width = 290,
-                    Height = 30,
+                    Font = new Font("Segoe UI", 12, FontStyle.Bold), 
+                    AutoSize = false, 
+                    Width = 230, 
+                    Height = 30, 
                     AutoEllipsis = true,
-                    Location = new Point(15, 14)
+                    Location = new Point(75, 25) 
                 };
                 opnHeader.Controls.Add(olaTitle);
 
-                Label olaDetails = new Label
+                FlowLayoutPanel opnDetails = new FlowLayoutPanel 
                 {
-                    Text = ptDetails,
-                    ForeColor = Color.FromArgb(80, 80, 80),
-                    Font = new Font("Segoe UI", 11, FontStyle.Regular),
-                    AutoSize = true,
-                    Location = new Point(15, 75),
-                    Padding = new Padding(0, 0, 0, 20)
+                    FlowDirection = FlowDirection.TopDown,
+                    Location = new Point(15, 90), 
+                    Width = 290, 
+                    Height = 230 
                 };
 
-                opnCard.Controls.Add(olaDetails);
+                opnDetails.Controls.Add(W_PRCpanelCreateDetailRow(
+                        IconChar.GasPump, 
+                        $"Station : {tStationName}",
+                        Color.FromArgb(0, 120, 21)
+                    ));
+                opnDetails.Controls.Add(W_PRCpanelCreateDetailRow(
+                        IconChar.CalendarAlt, 
+                        $"Period : {dStart:dd/MM/yy} - {dEndDisplay:dd/MM/yy}",
+                        Color.Gray
+                    ));
+                opnDetails.Controls.Add(W_PRCpanelCreateDetailRow(
+                        IconChar.ChartLine, 
+                        $"Averages :฿ {oItem.cAvgPrice:F2} Baht/Lite", 
+                        Color.FromArgb(230, 81, 0)
+                    ));
+                opnDetails.Controls.Add(W_PRCpanelCreateDetailRow(
+                        IconChar.ArrowDown, 
+                        $"Lowest Price :฿ {oItem.cMinPrice:F2} Baht/Lite",
+                        Color.Green
+                    ));
+                opnDetails.Controls.Add(W_PRCpanelCreateDetailRow(
+                        IconChar.ArrowUp,
+                        $"Highest Price :฿ {oItem.cMaxPrice:F2} Baht/Lite", 
+                        Color.Red
+                    ));
+                opnDetails.Controls.Add(W_PRCpanelCreateDetailRow( 
+                        IconChar.Database, 
+                        $"Records found : {oItem.nTotalRecords} items", 
+                        Color.DarkSlateGray
+                    ));
+
+                opnCard.Controls.Add(opnDetails);
                 opnCard.Controls.Add(opnHeader);
 
-                opnCard.Paint += (s, e) =>
-                {
-                    try
-                    {
-                        using (GraphicsPath oPath = new GraphicsPath())
-                        {
-                            int nRadius = 20;
-                            oPath.AddArc(0, 0, nRadius, nRadius, 180, 90);
-                            oPath.AddArc(opnCard.Width - nRadius, 0, nRadius, nRadius, 270, 90);
-                            oPath.AddArc(opnCard.Width - nRadius, opnCard.Height - nRadius, nRadius, nRadius, 0, 90);
-                            oPath.AddArc(0, opnCard.Height - nRadius, nRadius, nRadius, 90, 90);
-                            opnCard.Region = new Region(oPath);
-                        }
-                    }
-                    catch { }
-                };
-
-                EventHandler oHoverEnter = (s, e) =>
-                {
-                    try
-                    {
-                        opnCard.BackColor = Color.FromArgb(248, 250, 255);
-                        opnHeader.BackColor = Color.FromArgb(0, 100, 190);
-                        Cursor.Current = Cursors.Hand;
-                    }
-                    catch { }
-                };
-                EventHandler oHoverLeave = (s, e) =>
-                {
-                    try
-                    {
-                        opnCard.BackColor = Color.White;
-                        opnHeader.BackColor = Color.FromArgb(0, 120, 212);
-                        Cursor.Current = Cursors.Default;
-                    }
-                    catch { }
-                };
-
-                opnCard.MouseEnter += oHoverEnter;
-                opnCard.MouseLeave += oHoverLeave;
-                opnHeader.MouseEnter += oHoverEnter;
-                opnHeader.MouseLeave += oHoverLeave;
-                olaTitle.MouseEnter += oHoverEnter;
-                olaTitle.MouseLeave += oHoverLeave;
-                olaDetails.MouseEnter += oHoverEnter;
-                olaDetails.MouseLeave += oHoverLeave;
+                GraphicsPath oPath = new GraphicsPath();
+                int nRadius = 20;
+                oPath.AddArc(0, 0, nRadius, nRadius, 180, 90);
+                oPath.AddArc(opnCard.Width - nRadius, 0, nRadius, nRadius, 270, 90);
+                oPath.AddArc(opnCard.Width - nRadius, opnCard.Height - nRadius, nRadius, nRadius, 0, 90);
+                oPath.AddArc(0, opnCard.Height - nRadius, nRadius, nRadius, 90, 90);
+                oPath.CloseFigure();
+                opnCard.Region = new Region(oPath);
 
                 return opnCard;
             }
-            catch (Exception oEx)
-            {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog
-                {
-                    tFTProcessName = "wFormDashBoard.W_PRCopnCreateCard",
-                    tFTErrorMessage = oEx.Message,
-                    tFTStackTrace = oEx.StackTrace
-                });
-                return new Panel();
-            }
+            catch { return new Panel(); }
         }
 
         private void W_PRCxSetupUI()
@@ -323,8 +380,10 @@ namespace TSDCOilPriceMonitoring_REV02
                     BackColor = Color.Transparent,
                     Padding = new Padding(15)
                 };
+                opnDashBoard.AutoScrollMargin = new Size(0, 20);
                 typeof(FlowLayoutPanel).GetProperty("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance)?.SetValue(opnDashBoard, true, null);
 
+                this.Shown += (s, e) => W_PRCxCenterDashboardContent();
                 opnDashBoard.Resize += (s, e) => W_PRCxCenterDashboardContent();
 
                 oLoading = new wLoadingPanel();
@@ -335,15 +394,7 @@ namespace TSDCOilPriceMonitoring_REV02
                 this.Controls.Add(oFilterPanel);
                 oFilterPanel.SendToBack();
             }
-            catch (Exception oEx)
-            {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog
-                {
-                    tFTProcessName = "wFormDashBoard.W_PRCxSetupUI",
-                    tFTErrorMessage = oEx.Message,
-                    tFTStackTrace = oEx.StackTrace
-                });
-            }
+            catch { }
         }
     }
 }

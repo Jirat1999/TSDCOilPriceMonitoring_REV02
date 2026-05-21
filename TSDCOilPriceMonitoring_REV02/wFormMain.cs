@@ -1,4 +1,5 @@
-﻿using System.Drawing.Drawing2D;
+﻿using FontAwesome.Sharp;
+using System.Drawing.Drawing2D;
 using TSDCOilPriceMonitoring_REV02.Class;
 using TSDCOilPriceMonitoring_REV02.Models;
 
@@ -7,7 +8,7 @@ namespace TSDCOilPriceMonitoring_REV02
     public partial class wFormMain : Form
     {
         private Panel opnSidebar, opnContent;
-        private Button ocnDashBoard, ocnGridView;
+        private Button ocnDashBoard, ocnGridView, ocnChartSummary;
         private Panel opnActiveIndicator;
         private Form? oActiveForm = null;
         private cLogService oLog = new cLogService();
@@ -82,6 +83,7 @@ namespace TSDCOilPriceMonitoring_REV02
             {
                 ocnDashBoard.BackColor = oSidebarBg;
                 ocnGridView.BackColor = oSidebarBg;
+                if (ocnChartSummary != null) ocnChartSummary.BackColor = oSidebarBg;
 
                 if (poActiveBtn != null)
                 {
@@ -120,7 +122,7 @@ namespace TSDCOilPriceMonitoring_REV02
                 Panel opnLogoArea = new Panel
                 {
                     Dock = DockStyle.Top,
-                    Height = 180 
+                    Height = 180
                 };
 
                 PictureBox opicLogo = new PictureBox
@@ -171,17 +173,12 @@ namespace TSDCOilPriceMonitoring_REV02
                 Label olaAppTitle = new Label
                 {
                     Text = "TSDC Oil Price\nMonitoring",
-
                     Font = new Font("Segoe UI", 12, FontStyle.Bold),
                     ForeColor = Color.FromArgb(144, 202, 249),
                     TextAlign = ContentAlignment.MiddleCenter,
-
                     AutoSize = false,
-
                     Height = 75,
-
                     Dock = DockStyle.Bottom,
-
                     Padding = new Padding(10, 0, 10, 10)
                 };
 
@@ -196,20 +193,28 @@ namespace TSDCOilPriceMonitoring_REV02
                 };
                 opnSidebar.Controls.Add(opnActiveIndicator);
 
-                ocnDashBoard = W_PRCopnCreateMenuButton("🏠  Dashboard", 180);
+                ocnDashBoard = W_PRCopnCreateMenuButton("Dashboard", 180, FontAwesome.Sharp.IconChar.Home);
                 ocnDashBoard.Click += (s, e) =>
                 {
                     W_PRCxHighlightButton((Button)s);
                     W_PRCxOpenChildForm(new wFormDashBoard());
                 };
 
-                ocnGridView = W_PRCopnCreateMenuButton("📊  Grid View", 240);
+                ocnGridView = W_PRCopnCreateMenuButton("Grid View", 240, FontAwesome.Sharp.IconChar.Table);
                 ocnGridView.Click += (s, e) =>
                 {
                     W_PRCxHighlightButton((Button)s);
                     W_PRCxOpenChildForm(new wFormGridView());
                 };
 
+                ocnChartSummary = W_PRCopnCreateMenuButton("Chart Summary", 300, FontAwesome.Sharp.IconChar.ChartBar);
+                ocnChartSummary.Click += (s, e) =>
+                {
+                    W_PRCxHighlightButton((Button)s);
+                    W_PRCxOpenChildForm(new wFormChartSummary());
+                };
+
+                opnSidebar.Controls.Add(ocnChartSummary);
                 opnSidebar.Controls.Add(ocnGridView);
                 opnSidebar.Controls.Add(ocnDashBoard);
                 opnSidebar.Controls.Add(opnLogoArea);
@@ -227,7 +232,9 @@ namespace TSDCOilPriceMonitoring_REV02
                     BackColor = oContentBg
                 };
 
-                this.Controls.Add(opnContent); this.Controls.Add(opnShadow); this.Controls.Add(opnSidebar);
+                this.Controls.Add(opnContent);
+                this.Controls.Add(opnShadow);
+                this.Controls.Add(opnSidebar);
             }
             catch (Exception oEx)
             {
@@ -240,19 +247,26 @@ namespace TSDCOilPriceMonitoring_REV02
             }
         }
 
-        private Button W_PRCopnCreateMenuButton(string ptText, int pnPositionY)
+        private Button W_PRCopnCreateMenuButton(string ptText, int pnPositionY, IconChar poIcon)
         {
-            Button oBtn = new Button();
+            FontAwesome.Sharp.IconButton oBtn = new FontAwesome.Sharp.IconButton();
             try
             {
-                oBtn = new Button
+                oBtn = new FontAwesome.Sharp.IconButton
                 {
-                    Text = ptText,
+                    Text = "  " + ptText, 
+                    IconChar = poIcon,
+                    IconColor = Color.White,
+                    IconSize = 30, 
                     Font = new Font("Segoe UI", 11, FontStyle.Regular),
                     ForeColor = Color.White,
                     BackColor = oSidebarBg,
                     FlatStyle = FlatStyle.Flat,
+
                     TextAlign = ContentAlignment.MiddleLeft,
+                    ImageAlign = ContentAlignment.MiddleLeft,
+                    TextImageRelation = TextImageRelation.ImageBeforeText,
+
                     Padding = new Padding(25, 0, 0, 0),
                     Location = new Point(0, pnPositionY),
                     Size = new Size(230, 60),

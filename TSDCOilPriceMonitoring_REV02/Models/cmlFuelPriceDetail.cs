@@ -6,5 +6,6 @@
         public string? tStationName { get; set; }
         public string? tFuelName { get; set; }
         public decimal cPricedPrice { get; set; }
+        public decimal cPriceDiff { get; set; }
     }
 }

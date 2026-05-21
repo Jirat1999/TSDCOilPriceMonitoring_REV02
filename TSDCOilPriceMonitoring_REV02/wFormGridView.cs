@@ -35,8 +35,8 @@ namespace TSDCOilPriceMonitoring_REV02
             }
         }
 
-        private void W_PRCxLoadGridData()
-        {
+       private void W_PRCxLoadGridData()
+       {
             try
             {
                 List<cmlFuelPriceDetail> oDetails = oRepo.C_PRCaoGetFuelPriceDetails(
@@ -46,16 +46,8 @@ namespace TSDCOilPriceMonitoring_REV02
                     oFilterPanel.aFuelIds
                 );
 
-                if (oDetails != null)
-                {
-                    oDetails.ForEach(oItem =>
-                    {
-                        if (!string.IsNullOrEmpty(oItem.tStationName))
-                        {
-                            oItem.tStationName = oItem.tStationName.ToUpper();
-                        }
-                    });
-                }
+                cFuelCalculatorService oCalc = new cFuelCalculatorService();
+                var oDisplayData = oCalc.C_PRClstCalculatePriceDiff(oDetails);
 
                 int nLimit = 0;
                 if (ocbLimit.SelectedItem != null && ocbLimit.SelectedItem.ToString() != "All")
@@ -63,15 +55,15 @@ namespace TSDCOilPriceMonitoring_REV02
                     int.TryParse(ocbLimit.SelectedItem.ToString(), out nLimit);
                 }
 
-                var oDisplayData = (nLimit > 0 && oDetails != null) ? oDetails.Take(nLimit).ToList() : oDetails;
+                if (nLimit > 0 && oDisplayData != null) 
+                    oDisplayData = oDisplayData.Take(nLimit).ToList();
 
                 ogdData.DataSource = (oDisplayData != null && oDisplayData.Count > 0) ? oDisplayData : null;
-                if (oDisplayData != null && oDisplayData.Count > 0) ogdData.ClearSelection();
+                if (ogdData.Rows.Count > 0) ogdData.ClearSelection();
             }
             catch (Exception oEx)
             {
-                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog
-                {
+                oLog?.C_PRCxWriteErrorLog(new cmlErrorLog { 
                     tFTProcessName = "wFormGridView.W_PRCxLoadGridData",
                     tFTErrorMessage = oEx.Message,
                     tFTStackTrace = oEx.StackTrace
@@ -160,7 +152,7 @@ namespace TSDCOilPriceMonitoring_REV02
                 {
                     Text = "Show records:",
                     AutoSize = true,
-                    Location = new Point(10, 5), 
+                    Location = new Point(10, 5),
                     Font = new Font("Segoe UI", 10.5f),
                     ForeColor = Color.FromArgb(64, 64, 64)
                 };
@@ -169,7 +161,7 @@ namespace TSDCOilPriceMonitoring_REV02
                 {
                     DropDownStyle = ComboBoxStyle.DropDownList,
                     Width = 100,
-                    Location = new Point(140, 2),  
+                    Location = new Point(140, 2),
                     Font = new Font("Segoe UI", 10.5f)
                 };
                 ocbLimit.Items.AddRange(new string[] { "50", "100", "500", "All" });
@@ -219,6 +211,7 @@ namespace TSDCOilPriceMonitoring_REV02
 
                 ogdData.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(249, 250, 252);
 
+                // --- Columns Setup ---
                 ogdData.Columns.Add(new DataGridViewTextBoxColumn
                 {
                     HeaderText = "Effective Date",
@@ -239,15 +232,40 @@ namespace TSDCOilPriceMonitoring_REV02
                 {
                     HeaderText = "Price (THB)",
                     DataPropertyName = "cPricedPrice",
-                    DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleRight, Format = "N2" }
+                    DefaultCellStyle = { 
+                        Alignment = DataGridViewContentAlignment.MiddleRight, 
+                        Format = "N2" 
+                    }
                 });
+
+                ogdData.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    HeaderText = "Diff",
+                    DataPropertyName = "cPriceDiff",
+                    DefaultCellStyle = { 
+                        Alignment = DataGridViewContentAlignment.MiddleRight,
+                        Format = "+0.00;-0.00;0.00" 
+                    }
+                });
+
+                ogdData.CellFormatting += (s, e) =>
+                {
+                    if (ogdData.Columns[e.ColumnIndex].HeaderText == "Diff" && e.Value != null)
+                    {
+                        decimal nDiff = Convert.ToDecimal(e.Value);
+                        if (nDiff > 0) e.CellStyle.ForeColor = Color.Red;
+                        else if (nDiff < 0) e.CellStyle.ForeColor = Color.Green;
+                        else e.CellStyle.ForeColor = Color.Gray;
+                    }
+                };
 
                 opnGridContainer.Controls.Add(ogdData);
 
                 opnContent.Controls.Add(opnGridContainer);
                 opnContent.Controls.Add(opnTopHeader);
 
-                this.Controls.Add(opnContent); this.Controls.Add(oFilterPanel);
+                this.Controls.Add(opnContent);
+                this.Controls.Add(oFilterPanel);
                 oFilterPanel.SendToBack();
             }
             catch (Exception oEx)
